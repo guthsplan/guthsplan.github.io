@@ -1,0 +1,33 @@
+{
+  "name": "Hyungu Kim",
+  "url": "https://guthsplan.github.io",
+  "description": "Hyungu Kim — agents that reason and act in the physical world.",
+  "links": [
+    {
+      "label": "GitHub",
+      "href": "https://github.com/guthsplan",
+      "icon": "github"
+    },
+    {
+      "label": "LinkedIn",
+      "href": "https://www.linkedin.com/in/guthsplan",
+      "icon": "linkedin"
+    },
+    {
+      "label": "X",
+      "href": "https://x.com/guthsplan",
+      "icon": "x-twitter"
+    },
+    {
+      "label": "CV",
+      "href": "/assets/files/CV_HyunguKim.pdf",
+      "icon": "file-lines"
+    }
+  ],
+  "scholar": {
+    "label": "Google Scholar",
+    "icon": "google-scholar",
+    "href": "",
+    "note": "add the profile URL and move this into links"
+  }
+}

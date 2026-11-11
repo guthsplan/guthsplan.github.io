@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>Hyungu Kim</title><link>https://guthsplan.github.io</link><description>Hyungu Kim — agents that reason and act in the physical world.</description>
+<item><title>Building both sides of the benchmark</title><link>https://guthsplan.github.io/blog/agentbeats/</link><guid>https://guthsplan.github.io/blog/agentbeats/</guid><pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate><description>Notes from AgentX–AgentBeats, where we built the judge (an agentified Minecraft benchmark) and then the player (a VLA with a small planning harness). Most of the player's competence, I think, lived in the harness.</description></item>
+</channel></rss>
