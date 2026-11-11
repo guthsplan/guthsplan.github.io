@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teaching a VLA to know where it is in a task · Hyungu Kim</title>
+<meta name="description" content="Notes from our 2026 BEHAVIOR Challenge entry (team VGI-SKT): belief-graph chain-of-thought as supervision, rare skills, per-skill experts, and why our best number comes with an asterisk.">
+<meta property="og:title" content="Teaching a VLA to know where it is in a task · Hyungu Kim">
+<meta property="og:description" content="Notes from our 2026 BEHAVIOR Challenge entry (team VGI-SKT): belief-graph chain-of-thought as supervision, rare skills, per-skill experts, and why our best number comes with an asterisk.">
+<meta property="og:image" content="https://guthsplan.github.io/assets/img/hyungu.webp">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="alternate" type="application/rss+xml" title="Hyungu Kim" href="/feed.xml">
+</head>
+<body>
+<main class="shell">
+  <button class="theme-toggle" type="button" aria-label="Toggle theme"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.4 2.6a9.6 9.6 0 1 0 12 12.1.7.7 0 0 0-.9-.9A7.8 7.8 0 0 1 10.3 3.5a.7.7 0 0 0-.9-.9Z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></g></svg></button>
+  <header class="masthead">
+    <div>
+      <h1><a href="/">Hyungu Kim</a></h1>
+      <nav class="site-nav"><a href="/">about</a><a href="/blog/" aria-current="page">blog</a><a href="/publications/">publications</a><a href="/misc/">misc</a></nav>
+    </div>
+    
+  </header>
+
+  <article>
+    <header class="post-head">
+      <div class="meta">November 11, 2026 · 7 min read</div>
+      <h1>Teaching a VLA to know where it is in a task</h1>
+      <div class="tags">vla, behavior-1k, manipulation, belief-graph</div>
+    </header>
+    <div class="prose"><div class="tldr">
+
+<p><strong>tldr;</strong> For the 2026 BEHAVIOR Challenge we adapted G0.5, a VLA that reasons and acts in one autoregressive stream, to 100 long-horizon household tasks. The thing that helped most was teaching the model to <em>describe the state of the task</em> (a belief graph) during training, without ever making it maintain one at test time. Our routed submission reaches a mean Q-score of 0.445 and 22.3% full-task success over 1,000 public rollouts, though part of that number is a selection effect, which I&#39;ll get to.</p>
+</div>
+
+<h2>The problem: long tasks, short memory</h2>
+<p>BEHAVIOR-1K puts a bimanual mobile robot (R1Pro) in simulated homes and asks it to do chores like <em>cook the hot dogs</em> or <em>put away the Halloween decorations</em>. The 2026 edition has 100 tasks across 7 scenes, with 200 teleoperated demonstrations each: 20,000 episodes, roughly 1,950 hours of 30 Hz data. A single episode can run for thousands of control steps, and the score (Q) is the fraction of goal conditions satisfied at the end.</p>
+<p>What makes this hard is not any one motion. It is that the robot has to remember <em>where it is in the task</em>. A robot holding a hot dog before cooking it and after cooking it sees almost the same image, but should do completely different things next. A single camera frame often just doesn&#39;t contain that information.</p>
+<figure><img src="/assets/diagrams/b1k-overview.svg" alt="Three camera views, the task instruction and proprioception go into the G0.5 VLM. It first generates a subtask, then action tokens. The subtask routes a skill-specific LoRA on a flow-matching action expert that reads the VLM's KV cache and outputs a 32-step action chunk." loading="lazy"><figcaption><b>Figure 1.</b> Our policy. G0.5 writes a short subtask, which picks a skill adapter for the flow-matching action expert, which turns noise into a 32-step action chunk. <a class="edit" href="/assets/diagrams/b1k-overview.excalidraw" download>.excalidraw</a></figcaption></figure>
+
+<h2>Start boring</h2>
+<p>We started from G0.5, which already has the pieces we wanted: a Qwen3.5-2B backbone that can generate reasoning text and discrete action tokens in the same stream, plus a separate flow-matching <em>action expert</em> that reads the backbone&#39;s KV cache and produces continuous actions. Stage 1 was just fine-tuning it on all 20,000 demos with action supervision, on 8×H200.</p>
+<p>Two lessons from this stage turned out to matter for everything after:</p>
+<ul>
+<li><strong>Offline validation loss is a bad compass.</strong> In a five-task pilot, the checkpoint with the lowest validation error succeeded in 5 of 25 closed-loop rollouts; a later checkpoint with <em>worse</em> validation error got 7 of 25. So we stopped holding out data and picked checkpoints by actually running them, which is painful at roughly 12 minutes per rollout.</li>
+<li><strong>Commit to the whole chunk.</strong> Executing all 32 predicted actions before replanning beat executing half of them in both comparisons we ran. Re-planning more often sounds safer, and wasn&#39;t.</li>
+</ul>
+<h2>Belief graphs as supervision, not as input</h2>
+<p>Here is the idea I like most from this project. From the recorded simulator states, the BDDL goal definitions and the skill annotations, we can reconstruct a symbolic <em>belief graph</em> for every demo: which objects are open, inside, on top of, in hand, cooked; which goal conditions are already satisfied; what the next skill is supposed to change. We extracted it offline at 10 Hz over all 20,000 episodes (about 7 million target rows, 4.5 hours on 20 CPU processes).</p>
+<p>Our first instinct was to feed that graph to the policy as input and have the model keep it updated at test time. In a closed-loop pilot, one wrong observation got written into the graph and then stayed there for the rest of the episode. The policy trusted its own memory more than its eyes.</p>
+<p>So we flipped it: the belief graph only ever appears as a <strong>training target</strong>. For each sample, one &quot;target builder&quot; is drawn and the model has to write that field before its action tokens:</p>
+<ul>
+<li><strong>Subtask</strong>: the current skill with its objects (<em>pick up hotdog_208 from fridge</em>);</li>
+<li><strong>Delta</strong>: goal progress as counts (<em>cooked ?x 0/2</em>);</li>
+<li><strong>Belief</strong>: predicate estimates with a confidence and whether they come from memory;</li>
+<li><strong>Effect</strong>: what the current skill is expected to change;</li>
+<li><strong>Observe</strong>: what is visible right now.</li>
+</ul>
+<p>At test time the model only writes the subtask. The rest is there purely to shape what the backbone has to represent.</p>
+<figure><img src="/assets/diagrams/b1k-bgcot.svg" alt="Recorded simulator states, BDDL goals and skill annotations produce a belief graph, which yields five target fields: Subtask, Delta, Belief, Effect and Observe. During training one builder per sample supervises the stream; at test time only the subtask is generated." loading="lazy"><figcaption><b>Figure 2.</b> Belief-graph chain-of-thought: auxiliary targets during training, a one-line subtask at test time. <a class="edit" href="/assets/diagrams/b1k-bgcot.excalidraw" download>.excalidraw</a></figcaption></figure>
+
+<p>In a five-task pilot this lifted the mean Q-score from about 0.10 to 0.157. Across all 100 tasks, the BG-CoT model reached 0.360, up from 0.298 for the checkpoint it started from. I want to be careful with that second comparison: it also includes the sampler below and 180k more training steps, so it isn&#39;t a clean ablation of the CoT targets alone.</p>
+<h2>Rare skills get starved</h2>
+<p>The demonstrations are wildly unbalanced across the 35 annotated skills. <em>Move to</em> is 38% of all frames; 26 skills are under 1% each, and <em>lift</em> has 293 frames in total. Under uniform frame sampling, short-but-hard skills like <em>insert</em> or <em>press</em> are barely trained.</p>
+<p>We tempered the per-skill sampling distribution and raised a floor for rare skills, with a cap on how many times any single frame can be redrawn, so the floor doesn&#39;t turn into memorising the same 293 frames. In the pilot, mild tempering beat both no balancing and stronger tempering. Over the full run, the 18 up-weighted skills went from 2.2% to 8.4% of training samples.</p>
+<h2>One expert per kind of motion</h2>
+<p>Driving across a room, grasping a small object and wiping a surface with a tool are very different motions for one action expert to cover. So we grouped the skills by motion (navigation, grasp, place, push/contact, tool use, in-place interaction) and trained a LoRA adapter on the action expert for each group. At inference, a deterministic parser maps the generated subtask to a group and swaps in that adapter, with no learned gate.</p>
+<p>Honest result: averaged over 100 tasks, the adapters did <em>not</em> beat the shared expert (0.352 vs 0.360). But they were the best configuration on 35 individual tasks, which is why they still matter for the submission.</p>
+<figure><img src="/assets/diagrams/b1k-stages.svg" alt="Stage 1 full fine-tune reaches Q 0.298; Stage 2 BG-CoT with LoRA and skill-balanced sampling reaches 0.360; Stage 3 skill LoRA reaches 0.352; routing the best of six configurations per task gives 0.445 with 22.3% success." loading="lazy"><figcaption><b>Figure 3.</b> The three training stages and their mean Q-scores on all 100 tasks. <a class="edit" href="/assets/diagrams/b1k-stages.excalidraw" download>.excalidraw</a></figcaption></figure>
+
+<h2>A small detour: arms from tokens, the rest from flow</h2>
+<p>G0.5 can produce actions two ways: discrete ActionCodec tokens from the autoregressive decoder, or continuous chunks from the flow-matching expert. The token path has a quirk: when a gripper command stays constant for a whole chunk, its tokens are simply omitted, so in the <em>cook hot dogs</em> demos gripper tokens appear in only 1–3% of chunks. Pure token decoding left the base standing still and went 0 for 13 on <em>make microwave popcorn</em>.</p>
+<p>So we tried a hybrid: arms from tokens, torso, base and grippers from the flow expert. In a pilot it went from 1 to 4 successes out of 25. On all 100 tasks it averaged lower (0.302), but again won on 10 specific tasks. Seeing this pattern for the second time, I&#39;ve stopped thinking of these variants as &quot;better&quot; or &quot;worse&quot;. They&#39;re good at different things.</p>
+<h2>The number, and its asterisk</h2>
+<p>Since no single configuration was best everywhere, the submission picks one of six configurations per task based on its public results. Aggregated, that&#39;s a mean Q-score of <strong>0.445</strong> and <strong>22.3%</strong> full-task success (223 of 1,000 episodes), versus 0.360 and 15.1% for the best single configuration. Nine of ten rollouts succeed on <em>moving boxes to storage</em> and <em>putting dirty dishes in sink</em>. Only three tasks score zero.</p>
+<p>The asterisk: the routing was chosen on the same public rollouts that the score is computed on. Part of that jump from 0.360 to 0.445 is a selection effect, and a clean estimate would need held-out instances. I&#39;d rather say that out loud than have someone else point it out.</p>
+<h2>What still fails</h2>
+<p>Looking through failed rollouts, the same things keep coming up, with or without CoT: repeated grasp and placement attempts, picking the hand that is badly placed for the object, collisions the robot never recovers from, and arm or torso posture slowly drifting until the head camera stares at the ceiling. None of the inference-time tricks we tried (temporal ensembling, subtask hysteresis, inpainting, bias correction) fixed these.</p>
+<p>My read is that this is a data problem more than an inference problem: the demonstrations almost never show a robot noticing a failed grasp and trying again, so the policy has never seen what recovery looks like. Which loops back to the <a href="/blog/agentbeats/">AgentBeats</a> lesson. Something has to know <em>where you are in the task</em> and <em>when the current attempt has failed</em>. Here we taught the model to describe the first; nobody has taught it the second yet.</p>
+<h2>Ending note</h2>
+<p>The belief graph is the piece I&#39;d keep. Using privileged simulator state as <em>supervision</em> rather than as <em>input</em> gave us most of the structure of a planner, without the failure mode of a planner that believes its own mistakes. Next, I&#39;d like to see whether the predicted belief can actually drive subgoal recovery, and whether rejection-sampling fine-tuning or RL on the policy&#39;s own rollouts can fill in the missing recovery behaviour.</p>
+<h3>Acknowledgements</h3>
+<p>This was a team effort by VGI-SKT (SNU Visual &amp; Geometric Intelligence Lab and SK Telecom). Thanks to SK Telecom for compute, and to Chunfei Ma, Seungjun Lee and Joonhyang Choi for running the experiments on that infrastructure; to the BEHAVIOR organisers for the benchmark and evaluation; and to the G0.5 authors for releasing their model.</p>
+<h3>Links</h3>
+<ul>
+<li>Technical report: <a href="/assets/files/vgi-skt-behavior-2026.pdf">PDF</a></li>
+<li>Code: <a href="https://github.com/guthsplan/behavior1k-2026-solution">github.com/guthsplan/behavior1k-2026-solution</a></li>
+<li>Weights, Docker image and all 1,000 evaluation rollouts: <a href="https://huggingface.co/datasets/KWSMooBang/vgi-skt_behavior1k_challenge_2026_submission">Hugging Face</a></li>
+</ul>
+</div>
+  </article>
+  
+  <footer class="site-foot"><span>© 2026 Hyungu Kim</span><span>Seoul</span></footer>
+</main>
+<script src="/assets/js/main.js" defer></script>
+</body>
+</html>

@@ -401,3 +401,72 @@ footer.site-foot {
   .mark .drop { animation: none; }
   .mark .mark-svg { transition: opacity 0.25s linear !important; }
 }
+
+/* folded author list */
+.pub .authors details.fold { display: inline; }
+.pub .authors details.fold summary {
+  display: inline; list-style: none; cursor: pointer; margin-left: 6px;
+  font: 400 12.5px/1 var(--mono); color: var(--muted);
+  border-bottom: 1px dotted var(--halo-blue);
+  transition: color .45s var(--ease);
+}
+.pub .authors details.fold summary::-webkit-details-marker { display: none; }
+.pub .authors details.fold summary:hover { color: var(--hover); }
+.pub .authors details.fold[open] summary { display: none; }
+
+/* misc page: terse bulletins */
+.misc h2 { margin: 2.4em 0 0.8em; font: 500 16px/1.3 var(--mono); letter-spacing: -0.02em; color: var(--ink); padding-bottom: 8px; border-bottom: 1px solid var(--divider); }
+.misc h2:first-child { margin-top: 0.4em; }
+.misc ul { padding-left: 1.1em; }
+.misc li { margin: 0.35em 0; }
+.misc li::marker { color: var(--muted); }
+.misc .exp { margin: 0 0 1.4em; }
+.misc .exp p { margin: 0 0 0.3em; }
+.misc .exp .role { display: block; font: 400 13px/1.6 var(--mono); color: var(--muted); }
+.misc .exp ul { margin-top: 0.4em; }
+
+/* post figures (Excalidraw diagrams) */
+.prose figure img { width: 100%; height: auto; border: 1px solid var(--divider); border-radius: 6px; background: #fbfaf7; }
+.prose figcaption b { color: var(--ink); font-weight: 500; }
+.prose figure .edit { font: 400 12px/1 var(--mono); margin-left: 6px; }
+/* wide diagrams break out of the text column on large screens */
+@media (min-width: 760px) {
+  .prose figure { width: min(920px, calc(100vw - 64px)); position: relative; left: 50%; transform: translateX(-50%); }
+  .prose figure figcaption { max-width: 640px; margin-left: auto; margin-right: auto; }
+}
+
+/* blog index: cards with a thumbnail (after alexzhang13.github.io/blog) */
+.blog-intro { margin: 0 0 22px; }
+.blog-intro b { color: var(--ink); font-weight: 600; }
+.cards { display: grid; gap: 14px; }
+.post-card {
+  display: grid; grid-template-columns: 38% 1fr;
+  border: 1px solid var(--divider); border-radius: 6px; overflow: hidden;
+  transition: border-color .5s var(--ease), box-shadow .5s var(--ease);
+}
+.post-card:hover { border-color: var(--halo-blue); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tiffany) 14%, transparent); }
+.post-card .thumb { display: block; background: var(--surface); min-height: 150px; }
+.post-card .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: left center; padding: 10px 0 10px 10px; }
+.post-card .body { padding: 16px 18px 14px; }
+.post-card .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.post-card .icon { color: var(--ink); display: inline-flex; transition: color .45s var(--ease); }
+.post-card .icon svg { width: 16px; height: 16px; }
+.post-card .icon:hover { color: var(--hover); }
+.post-card h3 { margin: 6px 0 6px; font: 500 17px/1.35 var(--mono); letter-spacing: -0.03em; }
+.post-card h3 a { color: var(--ink); text-decoration: none; transition: color .45s var(--ease), text-shadow .45s var(--ease); }
+.post-card h3 a:hover { color: var(--hover); text-shadow: 0 0 14px var(--glow); }
+.post-card p { margin: 0 0 10px; font-size: 15px; }
+@media (max-width: 560px) {
+  .post-card { grid-template-columns: 1fr; }
+  .post-card .thumb { min-height: 0; aspect-ratio: 16 / 7; }
+}
+
+/* diagrams blend into the page: no frame, transparent background;
+   in dark mode they are inverted the same way Excalidraw's own dark theme does it */
+.prose figure img { border: 0 !important; border-radius: 0 !important; background: none !important; }
+:root[data-theme="dark"] .prose figure img,
+:root[data-theme="dark"] .post-card .thumb img { filter: invert(0.93) hue-rotate(180deg); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .prose figure img,
+  :root:not([data-theme="light"]) .post-card .thumb img { filter: invert(0.93) hue-rotate(180deg); }
+}

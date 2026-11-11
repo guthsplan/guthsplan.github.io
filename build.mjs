@@ -98,7 +98,7 @@ function layout({ title, description, active, body, home = false }) {
     ${home ? mark() : ''}
   </header>
 ${body}
-  <p class="epigraph"><q class="sweep">Blue has no dimensions. It is beyond dimensions.</q><span>— Yves Klein</span></p>
+  ${home ? '<p class="epigraph"><q class="sweep">Blue has no dimensions. It is beyond dimensions.</q><span>— Yves Klein</span></p>' : ''}
   <footer class="site-foot"><span>© ${new Date().getFullYear()} ${esc(site.name)}</span><span>Seoul</span></footer>
 </main>
 <script src="/assets/js/main.js" defer></script>
@@ -111,7 +111,14 @@ const postList = (list) => `<ul class="entries">${list.map((p) =>
   `<li class="entry"><span class="date">${fmtShort(p.date)}</span><div><a class="title" href="${p.url}">${esc(p.title)}</a></div></li>`).join('')}</ul>`;
 
 function pubBlock(p) {
-  const authors = p.authors.map((a) => (a.replace('*', '') === site.name ? `<b>${esc(a)}</b>` : esc(a))).join(', ');
+  // long author lists: first three, the rest folded behind "+N more"
+  const name = (a) => (a.replace('*', '') === site.name ? `<b>${esc(a)}</b>` : esc(a));
+  const SHOW = 3;
+  const head = p.authors.slice(0, SHOW).map(name).join(', ');
+  const rest = p.authors.slice(SHOW);
+  const authors = rest.length
+    ? `${head}<details class="fold"><summary>+${rest.length} more</summary>, ${rest.map(name).join(', ')}</details>`
+    : head;
   return `<article class="pub">
   ${p.image ? `<a class="preview" href="${p.links[0].href}"><img src="${p.image}" alt="${esc(p.imageAlt || p.title)}" loading="lazy"></a>` : ''}
   <div>
@@ -160,12 +167,18 @@ const blog = layout({
   title: 'blog', active: 'blog',
   body: `
   <section class="block">
-    <p class="meta">working notes — on agents, robots, and the space between thinking and acting.</p>
-    <div>${posts.map((p) => `<article class="post-row">
-      <div class="meta">${fmtLong(p.date)} · ${p.minutes} min read</div>
-      <h3><a href="${p.url}">${esc(p.title)}</a></h3>
-      <p>${esc(p.summary || '')}</p>
-      <div class="tags">${(p.tags || []).join(', ')}</div>
+    <p class="blog-intro"><b>working notes.</b> on agents, robots, and the space between thinking and acting. some come with fuller experiments than others.</p>
+    <div class="cards">${posts.map((p) => `<article class="post-card">
+      <a class="thumb" href="${p.url}" tabindex="-1" aria-hidden="true">${p.thumb ? `<img src="${p.thumb}" alt="" loading="lazy">` : ''}</a>
+      <div class="body">
+        <div class="top">
+          <span class="meta">${fmtLong(p.date)} · ${p.minutes} min read</span>
+          ${p.code ? `<a class="icon" href="${p.code}" target="_blank" rel="noopener" aria-label="Code on GitHub" title="Code">${icon('github')}</a>` : ''}
+        </div>
+        <h3><a href="${p.url}">${esc(p.title)}</a></h3>
+        <p>${esc(p.summary || '')}</p>
+        <div class="tags">${(p.tags || []).join(', ')}</div>
+      </div>
     </article>`).join('')}</div>
   </section>`,
 });
@@ -181,7 +194,7 @@ const publications = layout({
 
 const misc = layout({
   title: 'misc', active: 'misc',
-  body: `<section class="block prose">${marked.parse(read('content/misc.md'))}</section>`,
+  body: `<section class="block prose misc">${marked.parse(read("content/misc.md"))}</section>`,
 });
 
 const postPage = (p) => layout({
@@ -225,8 +238,21 @@ function build() {
 build();
 
 if (process.argv.includes('--serve')) {
-  const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.pdf': 'application/pdf', '.xml': 'application/xml', '.json': 'application/json' };
+  const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.pdf': 'application/pdf', '.xml': 'application/xml', '.json': 'application/json', '.mjs': 'text/javascript' };
   http.createServer((req, res) => {
+    // dev-only: tools/excalidraw-export.html posts rendered diagrams here
+    if (req.method === 'POST' && req.url.startsWith('/__save/')) {
+      const name = decodeURIComponent(req.url.slice('/__save/'.length));
+      if (!/^[a-z0-9-]+\.(svg|excalidraw)$/.test(name)) { res.writeHead(400); return res.end('bad name'); }
+      const chunks = [];
+      req.on('data', (c) => chunks.push(c));
+      req.on('end', () => {
+        fs.mkdirSync(path.join(ROOT, 'assets/diagrams'), { recursive: true });
+        fs.writeFileSync(path.join(ROOT, 'assets/diagrams', name), Buffer.concat(chunks));
+        res.writeHead(200); res.end('ok');
+      });
+      return;
+    }
     let p = decodeURIComponent(req.url.split('?')[0]);
     if (p.endsWith('/')) p += 'index.html';
     const f = path.resolve(ROOT, '.' + p);

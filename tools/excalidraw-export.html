@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>excalidraw export</title>
+<style>body{font:14px system-ui;margin:20px;background:#f5f4f0}#out img{max-width:900px;display:block;margin:16px 0;border:1px solid #ddd;background:#fff}</style>
+</head>
+<body>
+<p id="status">loading Excalidraw…</p>
+<div id="out"></div>
+<script type="module">
+// Dev tool: renders tools/diagrams.mjs with Excalidraw and saves SVG + .excalidraw via the dev server.
+// Run `npm run dev`, then open http://localhost:4000/tools/excalidraw-export.html
+import { convertToExcalidrawElements, exportToSvg, serializeAsJSON } from 'https://esm.sh/@excalidraw/excalidraw@0.18.0?deps=react@18.3.1,react-dom@18.3.1';
+import { diagrams } from './diagrams.mjs';
+
+const status = document.getElementById('status');
+const out = document.getElementById('out');
+const appState = { exportBackground: false, viewBackgroundColor: '#ffffff', exportWithDarkMode: false }; // transparent: blends into the page
+const results = [];
+for (const d of diagrams) {
+  const elements = convertToExcalidrawElements(d.elements, { regenerateIds: false })
+    .map((e) => (e.type === 'text' ? { ...e, fontFamily: 5 } : e)); // Excalifont
+  const svg = await exportToSvg({ elements, appState, files: {}, exportPadding: 28 });
+  svg.removeAttribute('width'); svg.removeAttribute('height');
+  const svgText = new XMLSerializer().serializeToString(svg);
+  const json = serializeAsJSON(elements, { ...appState }, {}, 'local');
+  await fetch(`/__save/${d.name}.svg`, { method: 'POST', body: svgText });
+  await fetch(`/__save/${d.name}.excalidraw`, { method: 'POST', body: json });
+  const img = document.createElement('img');
+  img.src = `/assets/diagrams/${d.name}.svg?${Date.now()}`;
+  out.append(Object.assign(document.createElement('h3'), { textContent: d.name }), img);
+  results.push(`${d.name}: ${elements.length} elements, ${(svgText.length / 1024).toFixed(0)} KB`);
+}
+status.textContent = 'done';
+window.__exportResult = results;
+</script>
+</body>
+</html>
