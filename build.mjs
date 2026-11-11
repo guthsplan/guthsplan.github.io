@@ -187,7 +187,7 @@ const home = layout({
   <section class="profile">
     ${photo}
     <ul class="links">
-      ${site.links.map((l) => `<li><a href="${l.href}" aria-label="${esc(l.label)}" title="${esc(l.label)}"${l.href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}><span class="br">[</span>${icon(l.icon)}<span class="br">]</span></a></li>`).join('\n      ')}
+      ${site.links.map((l) => `<li><a href="${l.href.startsWith('/assets/') ? `${l.href}?v=${hash(l.href.slice(1))}` : l.href}" aria-label="${esc(l.label)}" title="${esc(l.label)}"${l.href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}><span class="br">[</span>${icon(l.icon)}<span class="br">]</span></a></li>`).join('\n      ')}
     </ul>
   </section>
   <hr class="rule">
