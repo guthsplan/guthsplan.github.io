@@ -159,6 +159,8 @@ function pubBlock(p) {
 /* ---------------- pages ---------------- */
 const pubs = json('content/publications.json');
 const news = json('content/news.json');
+const NEWS_SHOWN = 2;
+const newsList = (items) => `<ul class="entries">${items.map((n) => `<li class="entry"><span class="date">${esc(n.date)}</span><div>${marked.parseInline(n.text)}</div></li>`).join('')}</ul>`;
 const intro = marked.parse(read('content/intro.md'));
 
 // Face looker (github.com/kylan02/face_looker): if assets/faces/ holds the generated
@@ -202,7 +204,7 @@ const home = layout({
   </section>
   <section class="block news">
     <h2 class="section">News</h2>
-    <ul class="entries">${news.map((n) => `<li class="entry"><span class="date">${esc(n.date)}</span><div>${marked.parseInline(n.text)}</div></li>`).join('')}</ul>
+    ${newsList(news.slice(0, NEWS_SHOWN))}${news.length > NEWS_SHOWN ? `<details class="news-more"><summary>[more]</summary>${newsList(news.slice(NEWS_SHOWN))}</details>` : ''}
   </section>`,
 });
 

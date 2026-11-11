@@ -575,3 +575,14 @@ footer.site-foot {
 .intro li { margin: 0.15em 0; }
 .intro li::marker { color: var(--klein-blue); }
 .intro li strong { font-weight: 600; }
+
+/* folded older news */
+.news details.news-more summary {
+  list-style: none; cursor: pointer; display: inline-block; margin-top: 6px;
+  font: 400 12.5px/1 var(--mono); color: var(--muted);
+  border-bottom: 1px dotted var(--halo-blue);
+  transition: color .45s var(--ease);
+}
+.news details.news-more summary::-webkit-details-marker { display: none; }
+.news details.news-more summary:hover { color: var(--hover); }
+.news details.news-more[open] summary { display: none; }
