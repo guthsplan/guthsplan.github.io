@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css?v=81c338bf">
+<link rel="stylesheet" href="/assets/css/style.css?v=2999cbeb">
 <link rel="alternate" type="application/rss+xml" title="Hyungu Kim" href="/feed.xml">
 </head>
 <body>
@@ -105,7 +105,7 @@
     <a class="more" href="/blog/">all posts →</a>
   </section>
   <section class="block">
-    <h2 class="section">Selected publications</h2>
+    <h2 class="section">Selected publications <button type="button" class="fold-toggle" aria-expanded="false">[more]</button></h2>
     <article class="pub">
   <a class="preview" href="/assets/files/vgi-skt-behavior-2026.pdf"><img src="/assets/img/b1k2026-method.webp" alt="Method overview: G0.5 VLM predicts a subtask, which routes a skill-specific LoRA on the flow-matching action expert." loading="lazy"></a>
   <div>
@@ -116,8 +116,7 @@
     
     <div class="plinks"><a class="special" href="/assets/files/vgi-skt-behavior-2026.pdf">report</a><a class="special" href="https://github.com/guthsplan/behavior1k-2026-solution">code</a><a class="special" href="https://huggingface.co/datasets/KWSMooBang/vgi-skt_behavior1k_challenge_2026_submission">Hugging Face</a></div>
   </div>
-</article>
-<article class="pub">
+</article><div class="fold-rest" hidden><article class="pub">
   <a class="preview" href="/assets/files/apsipa-2026-monocular-6dof.pdf"><img src="/assets/img/apsipa2026-method.webp" alt="Pipeline: SAM 3 masks and MoGe-2 metric depth, LoFTR matching with PnP-RANSAC, then keyframe bundle adjustment produce the object pose trajectory." loading="lazy"></a>
   <div>
     <div class="head meta"><span>2026 · Yonsei Multimedia AI Lab</span><span class="setting">#object tracking</span></div>
@@ -127,15 +126,15 @@
     
     <div class="plinks"><a class="special" href="/assets/files/apsipa-2026-monocular-6dof.pdf">report</a></div>
   </div>
-</article>
+</article></div>
   </section>
   <section class="block news">
-    <h2 class="section">News</h2>
-    <ul class="entries"><li class="entry"><span class="date">Oct 2026</span><div>Released our <a href="https://github.com/guthsplan/behavior1k-2026-solution">solution and technical report</a> for the 2026 BEHAVIOR Challenge (team VGI-SKT).</div></li><li class="entry"><span class="date">Aug 2026</span><div>Attended the Agentic AI Summit 2026 at UC Berkeley as an AgentX–AgentBeats winner.</div></li></ul><details class="news-more"><summary>[more]</summary><ul class="entries"><li class="entry"><span class="date">Jun 2026</span><div>Our AgentBeats wins in both phases of the Game Agent track were featured in <a href="https://cse.snu.ac.kr/ko/community/news/1213">SNU CSE news</a>.</div></li><li class="entry"><span class="date">Jun 2026</span><div><strong>1st place (tie)</strong> in Phase 2 of <a href="https://rdi.berkeley.edu/agentx-agentbeats">AgentX–AgentBeats</a> with VGI-Player, our Minecraft purple agent.</div></li><li class="entry"><span class="date">Feb 2026</span><div><strong>1st place</strong> in Phase 1 of <a href="https://rdi.berkeley.edu/agentx-agentbeats">AgentX–AgentBeats</a> with our agentified Minecraft (MCU) benchmark.</div></li><li class="entry"><span class="date">Dec 2025</span><div>Joined the <a href="https://mmai.yonsei.ac.kr/">Yonsei Multimedia AI Lab</a> as a research intern (CAD-free 6-DoF pose tracking).</div></li><li class="entry"><span class="date">Oct 2025</span><div>Joined the <a href="https://jaesik.info/">SNU Visual &amp; Geometric Intelligence Lab</a> as a research intern.</div></li></ul></details>
+    <h2 class="section">News <button type="button" class="fold-toggle" aria-expanded="false">[more]</button></h2>
+    <ul class="entries"><li class="entry"><span class="date">Oct 2026</span><div>Released our <a href="https://github.com/guthsplan/behavior1k-2026-solution">solution and technical report</a> for the 2026 BEHAVIOR Challenge (team VGI-SKT).</div></li><li class="entry"><span class="date">Aug 2026</span><div>Attended the Agentic AI Summit 2026 at UC Berkeley as an AgentX–AgentBeats winner.</div></li></ul><div class="fold-rest" hidden><ul class="entries"><li class="entry"><span class="date">Jun 2026</span><div>Our AgentBeats wins in both phases of the Game Agent track were featured in <a href="https://cse.snu.ac.kr/ko/community/news/1213">SNU CSE news</a>.</div></li><li class="entry"><span class="date">Jun 2026</span><div><strong>1st place (tie)</strong> in Phase 2 of <a href="https://rdi.berkeley.edu/agentx-agentbeats">AgentX–AgentBeats</a> with VGI-Player, our Minecraft purple agent.</div></li><li class="entry"><span class="date">Feb 2026</span><div><strong>1st place</strong> in Phase 1 of <a href="https://rdi.berkeley.edu/agentx-agentbeats">AgentX–AgentBeats</a> with our agentified Minecraft (MCU) benchmark.</div></li><li class="entry"><span class="date">Dec 2025</span><div>Joined the <a href="https://mmai.yonsei.ac.kr/">Yonsei Multimedia AI Lab</a> as a research intern (CAD-free 6-DoF pose tracking).</div></li><li class="entry"><span class="date">Oct 2025</span><div>Joined the <a href="https://jaesik.info/">SNU Visual &amp; Geometric Intelligence Lab</a> as a research intern.</div></li></ul></div>
   </section>
   <p class="epigraph"><q class="sweep">Blue has no dimensions. It is beyond dimensions.</q><span>— Yves Klein</span></p>
   <footer class="site-foot"><span>© 2026 Hyungu Kim</span><span>Seoul</span></footer>
 </main>
-<script src="/assets/js/main.js?v=1916fd83" defer></script>
+<script src="/assets/js/main.js?v=07ee32fa" defer></script>
 </body>
 </html>

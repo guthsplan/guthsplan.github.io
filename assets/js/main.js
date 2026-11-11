@@ -308,3 +308,12 @@
   }
   cycle();
 })();
+
+// section [more]/[less]: toggles the hidden rest of the list in place
+document.querySelectorAll(".fold-toggle").forEach((b) => b.addEventListener("click", () => {
+  const rest = b.closest("section").querySelector(".fold-rest");
+  const open = rest.hidden;
+  rest.hidden = !open;
+  b.textContent = open ? "[less]" : "[more]";
+  b.setAttribute("aria-expanded", String(open));
+}));

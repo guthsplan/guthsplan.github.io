@@ -160,6 +160,13 @@ function pubBlock(p) {
 const pubs = json('content/publications.json');
 const news = json('content/news.json');
 const NEWS_SHOWN = 2;
+const PUBS_SHOWN = 1;
+// heading with a [more]/[less] toggle beside it; items past `shown` start hidden
+const foldBlock = (title, items, shown, render) => items.length > shown
+  ? `<h2 class="section">${title} <button type="button" class="fold-toggle" aria-expanded="false">[more]</button></h2>
+    ${render(items.slice(0, shown))}<div class="fold-rest" hidden>${render(items.slice(shown))}</div>`
+  : `<h2 class="section">${title}</h2>
+    ${render(items)}`;
 const newsList = (items) => `<ul class="entries">${items.map((n) => `<li class="entry"><span class="date">${esc(n.date)}</span><div>${marked.parseInline(n.text)}</div></li>`).join('')}</ul>`;
 const intro = marked.parse(read('content/intro.md'));
 
@@ -199,12 +206,10 @@ const home = layout({
     <a class="more" href="/blog/">all posts →</a>
   </section>
   <section class="block">
-    <h2 class="section">Selected publications</h2>
-    ${pubs.filter((p) => p.selected).map(pubBlock).join('\n')}
+    ${foldBlock('Selected publications', pubs.filter((p) => p.selected).map(pubBlock), PUBS_SHOWN, (xs) => xs.join('\n'))}
   </section>
   <section class="block news">
-    <h2 class="section">News</h2>
-    ${newsList(news.slice(0, NEWS_SHOWN))}${news.length > NEWS_SHOWN ? `<details class="news-more"><summary>[more]</summary>${newsList(news.slice(NEWS_SHOWN))}</details>` : ''}
+    ${foldBlock('News', news, NEWS_SHOWN, newsList)}
   </section>`,
 });
 
