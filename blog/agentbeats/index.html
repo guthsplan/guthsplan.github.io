@@ -12,23 +12,30 @@
 <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
 <link rel="alternate" type="application/rss+xml" title="Hyungu Kim" href="/feed.xml">
 </head>
 <body>
-<main class="shell">
-  <button class="theme-toggle" type="button" aria-label="Toggle theme"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.4 2.6a9.6 9.6 0 1 0 12 12.1.7.7 0 0 0-.9-.9A7.8 7.8 0 0 1 10.3 3.5a.7.7 0 0 0-.9-.9Z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></g></svg></button>
-  <header class="masthead">
-    <div>
-      <h1><a href="/">Hyungu Kim</a></h1>
-      <nav class="site-nav"><a href="/">about</a><a href="/blog/" aria-current="page">blog</a><a href="/publications/">publications</a><a href="/misc/">misc</a></nav>
+<header class="site-head">
+  <div class="bar col"><nav class="site-nav"><a href="/">about</a><a href="/blog/" aria-current="page">blog</a><a href="/publications/">publications</a><a href="/misc/">misc</a></nav></div>
+  <div class="toc-bar">
+    <div class="col toc-inner">
+      <button class="toc-current" type="button" aria-expanded="false" aria-controls="toc-list">
+        <span class="num">01</span><span class="title">tl;dr</span>
+        <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <ol class="toc-list" id="toc-list" hidden><li><a href="#top" data-num="01"><span class="num">01</span>tl;dr</a></li><li><a href="#what-agentbeats-actually-is" data-num="02"><span class="num">02</span>What AgentBeats actually is</a></li><li><a href="#grading-minecraft-is-harder-than-playing-it" data-num="03"><span class="num">03</span>Grading Minecraft is harder than playing it</a></li><li><a href="#the-player-a-vla-with-a-little-bit-of-system-2" data-num="04"><span class="num">04</span>The player: a VLA with a little bit of System 2</a></li><li><a href="#timeouts-are-a-surprisingly-good-form-of-self-awareness" data-num="05"><span class="num">05</span>Timeouts are a surprisingly good form of self-awareness</a></li><li><a href="#where-should-the-line-between-thinking-and-acting-sit" data-num="06"><span class="num">06</span>Where should the line between thinking and acting sit?</a></li><li><a href="#ending-note" data-num="07"><span class="num">07</span>Ending note</a></li></ol>
     </div>
-    
-  </header>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Toggle theme"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.4 2.6a9.6 9.6 0 1 0 12 12.1.7.7 0 0 0-.9-.9A7.8 7.8 0 0 1 10.3 3.5a.7.7 0 0 0-.9-.9Z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></g></svg></button>
+  <div class="scroll-line" aria-hidden="true"><span></span></div>
+</header>
+<main class="shell col">
+  
 
   <article>
-    <header class="post-head">
+    <header class="post-head" id="top">
       <div class="meta">November 11, 2026 · 6 min read</div>
       <h1>Building both sides of the benchmark</h1>
       <div class="tags">agents, vla, minecraft, harness</div>
@@ -38,12 +45,12 @@
 <p><strong>tldr;</strong> Over the AgentX–AgentBeats competition, our team sat on both sides of the table. In Phase 1 we turned the MCU Minecraft benchmark into a <em>green agent</em> (a judge), and in Phase 2 we built a <em>purple agent</em> (a player) that had to survive it. Both placed first. The thing I keep coming back to is how much of the player&#39;s competence came from a thin layer of structure <em>around</em> the model, not from the model itself.</p>
 </div>
 
-<h2>What AgentBeats actually is</h2>
+<h2 id="what-agentbeats-actually-is">What AgentBeats actually is</h2>
 <p>Most agent benchmarks are a pile of tasks plus a script. You adapt your agent to the script, and the next benchmark makes you do it again. <a href="https://arxiv.org/abs/2606.13608">AgentBeats</a> flips this around: the benchmark is itself an agent. A <strong>green agent</strong> owns the environment, the tasks and the scoring; a <strong>purple agent</strong> is the thing being evaluated; and the two only talk through a standard protocol (A2A for messages, MCP for tools). If your purple agent speaks the protocol once, it can in principle be dropped into any benchmark on the platform.</p>
 <figure><img src="/assets/diagrams/agentbeats-aaa.svg" alt="Green agent (judge) and purple agent (player) exchange tasks, observations and actions over A2A; the purple agent reaches tools over MCP; the green agent reports scores to a leaderboard." loading="lazy"><figcaption><b>Figure 1.</b> Agentified agent assessment. The judge is an agent, so the player only has to learn one interface. <a class="edit" href="/assets/diagrams/agentbeats-aaa.excalidraw" download>.excalidraw</a></figcaption></figure>
 
 <p>The <a href="https://rdi.berkeley.edu/agentx-agentbeats">competition</a> ran in two phases. Phase 1 (Oct 2025 to Jan 2026) asked people to build green agents. Phase 2 (Mar to Jun 2026) asked people to build purple agents that do well on the best of them. We happened to do both on the same environment, which turned out to be a really nice way to learn about it.</p>
-<h2>Grading Minecraft is harder than playing it</h2>
+<h2 id="grading-minecraft-is-harder-than-playing-it">Grading Minecraft is harder than playing it</h2>
 <p>For Phase 1 we <a href="https://github.com/guthsplan/MCU-AgentBeats">agentified</a> the MCU benchmark: Minecraft tasks across 12 categories (building, combat, crafting, mining, exploring, ...) plus two genuinely long-horizon ones, <em>mine a diamond from scratch</em> and <em>kill the ender dragon</em>, which get 12,000 steps instead of the usual 1,200.</p>
 <p>The interesting part was not the plumbing (although there was a lot of plumbing). It was deciding what &quot;doing well&quot; means. A simulator reward is precise but narrow: it knows you picked up a log, it does not know you spent 900 steps staring at a wall first. A VLM judge watching the video is the opposite, broad but noisy. We ended up using both:</p>
 <ul>
@@ -55,7 +62,7 @@
 
 <p>The other lesson was about the action interface. If you want <em>any</em> purple agent to plug in, you cannot assume it thinks in the same action space as yours, so the judge accepts a few equivalent formats (a compact bitmask + camera bin, an expanded button array, or the raw env format). It sounds like a detail. In practice it decides whether people can actually use your benchmark.</p>
 <p>Writing a judge also made me much more suspicious of my own agents. Every scoring rule is a small claim about what progress looks like, and you only notice how arbitrary some of those claims are when you&#39;re the one writing them down.</p>
-<h2>The player: a VLA with a little bit of System 2</h2>
+<h2 id="the-player-a-vla-with-a-little-bit-of-system-2">The player: a VLA with a little bit of System 2</h2>
 <p>For Phase 2 we started from <a href="https://github.com/guthsplan/AgentBeats-JarvisVLA">JarvisVLA</a>, a vision-language-action model for Minecraft that is good at what I&#39;d call <em>single-instruction</em> control: give it &quot;mine the oak log&quot; and it will mostly go mine the oak log. What it is not built for is the 12,000-step version, where you need to remember that the log was for a crafting table, which was for a pickaxe, which was for the stone, and so on.</p>
 <p>The obvious fix is to put a big planner on top that re-plans every few frames. We did something lighter, which we started calling <strong>System 1.5</strong>:</p>
 <ol>
@@ -67,17 +74,17 @@
 <p>So the language model never touches the controls, and the VLA never has to know what the plan is. The harness in between is mostly bookkeeping.</p>
 <figure><img src="/assets/diagrams/agentbeats-player.svg" alt="An LLM router sends short tasks to JarvisVLA as a single instruction, and compiles long tasks into a finite-state plan whose states each hold an instruction and a timeout, with a fallback state; the current state's instruction drives the VLA." loading="lazy"><figcaption><b>Figure 3.</b> VGI-Player. Thinking happens once, up front; the VLA acts every step; a small state machine decides when to move on. <a class="edit" href="/assets/diagrams/agentbeats-player.excalidraw" download>.excalidraw</a></figcaption></figure>
 
-<h2>Timeouts are a surprisingly good form of self-awareness</h2>
+<h2 id="timeouts-are-a-surprisingly-good-form-of-self-awareness">Timeouts are a surprisingly good form of self-awareness</h2>
 <p>The part I underestimated was the timeouts. A VLA on its own has no notion of &quot;this isn&#39;t working&quot;. It will keep trying the same thing with total confidence. A timeout plus a fallback state is a very crude version of that missing signal, but I believe it did a lot of the heavy lifting on long tasks: instead of the agent getting stuck, the harness gets bored and moves it along.</p>
 <p>I later saw the same failure from the other side in the <a href="/blog/behavior-2026/">BEHAVIOR Challenge</a>, with a much larger VLA on a real-ish household robot: repeated grasp attempts, no notion of a failed subgoal, no recovery. Different domain, same missing piece. I don&#39;t think a bigger policy fixes this by itself. Something has to keep track of <em>where you are in the task</em>, and decide when the current attempt has failed.</p>
-<h2>Where should the line between thinking and acting sit?</h2>
+<h2 id="where-should-the-line-between-thinking-and-acting-sit">Where should the line between thinking and acting sit?</h2>
 <p>If I had to compress the whole competition into one question, it would be this. Our answer for AgentBeats was: thinking happens once, up front, as a plan; acting happens inside the VLA; and a dumb state machine connects them. That worked well enough to win, but it is clearly not the final shape. I see two directions:</p>
 <ul>
 <li><strong>push structure down into the policy</strong>: give the VLA memory and an explicit belief over task state, so it can notice failure without a babysitter (this is roughly what our belief-graph supervision in BEHAVIOR was poking at);</li>
 <li><strong>push control up into code</strong>: let the agent write the state machine, the checks and the controllers itself, i.e. code-as-policy, and only call the VLA for the parts that are actually hard to write down.</li>
 </ul>
 <p>I&#39;m honestly not sure which one wins, and the answer is probably &quot;it depends on the task&quot; (sorry). Figuring that out is roughly what I want to spend the next year on.</p>
-<h2>Ending note</h2>
+<h2 id="ending-note">Ending note</h2>
 <p>AgentBeats was fun precisely because it forced us to build the evaluator before the thing being evaluated. I&#39;d recommend it to anyone who builds agents: writing the judge changes how you build the player.</p>
 <h3>Acknowledgements</h3>
 <p>Thanks to my teammates at SNU VGI Lab, to Berkeley RDI and the AgentBeats organizers for running the competition, and to the CraftJarvis team for releasing JarvisVLA and the MCU benchmark.</p>

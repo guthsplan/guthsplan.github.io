@@ -58,7 +58,7 @@ function mark() {
 
 // brand icons (Font Awesome Free 6.5.2, CC BY 4.0), inlined so they inherit currentColor
 const icon = (name) => read(`assets/icons/${name}.svg`)
-  .replace(/<!--[sS]*?-->/, '')
+  .replace(/<!--[\s\S]*?-->/, '')
   .replace('<svg ', '<svg aria-hidden="true" focusable="false" fill="currentColor" ');
 
 function nav(active) {
@@ -67,7 +67,23 @@ function nav(active) {
     `<a href="${h}"${n === active ? ' aria-current="page"' : ''}>${n}</a>`).join('')}</nav>`;
 }
 
-function layout({ title, description, active, body, home = false }) {
+// Posts: a strip under the nav shows the section you are reading (number + title);
+// its chevron opens the full list of sections.
+function tocBar(toc) {
+  const num = (i) => String(i + 1).padStart(2, '0');
+  return `<div class="toc-bar">
+    <div class="col toc-inner">
+      <button class="toc-current" type="button" aria-expanded="false" aria-controls="toc-list">
+        <span class="num">${num(0)}</span><span class="title">${esc(toc[0].text)}</span>
+        <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <ol class="toc-list" id="toc-list" hidden>${toc.map((t, i) =>
+        `<li><a href="#${t.id}" data-num="${num(i)}"><span class="num">${num(i)}</span>${esc(t.text)}</a></li>`).join('')}</ol>
+    </div>
+  </div>`;
+}
+
+function layout({ title, description, active, body, home = false, toc = null }) {
   const pageTitle = title ? `${title} · ${site.name}` : site.name;
   return `<!doctype html>
 <html lang="en">
@@ -83,20 +99,25 @@ function layout({ title, description, active, body, home = false }) {
 <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
 <link rel="alternate" type="application/rss+xml" title="${esc(site.name)}" href="/feed.xml">
 </head>
 <body>
-<main class="shell">
+<header class="site-head">
+  <div class="bar col">${nav(active)}</div>
+  ${toc ? tocBar(toc) : ''}
   <button class="theme-toggle" type="button" aria-label="Toggle theme">${ICON_MOON}${ICON_SUN}</button>
-  <header class="masthead">
-    <div>
-      <h1><a href="/">${esc(site.name)}</a></h1>
-      ${nav(active)}
+  <div class="scroll-line" aria-hidden="true"><span></span></div>
+</header>
+<main class="shell col">
+  ${home ? `<div class="masthead is-home">
+    <div class="who">
+      <h1><a class="vim-name" href="/" aria-label="${esc(site.name)}" data-text="${esc(site.name)}"><span class="vim-chars" aria-hidden="true">${[...site.name].map((ch) => `<span class="vim-ch">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('')}</span><span class="vim-cursor is-bar" aria-hidden="true"></span></a></h1>
+      ${home && site.tagline ? `<p class="tagline">${esc(site.tagline)}</p>` : ''}
     </div>
-    ${home ? mark() : ''}
-  </header>
+    ${mark()}
+  </div>` : ''}
 ${body}
   ${home ? '<p class="epigraph"><q class="sweep">Blue has no dimensions. It is beyond dimensions.</q><span>— Yves Klein</span></p>' : ''}
   <footer class="site-foot"><span>© ${new Date().getFullYear()} ${esc(site.name)}</span><span>Seoul</span></footer>
@@ -122,7 +143,7 @@ function pubBlock(p) {
   return `<article class="pub">
   ${p.image ? `<a class="preview" href="${p.links[0].href}"><img src="${p.image}" alt="${esc(p.imageAlt || p.title)}" loading="lazy"></a>` : ''}
   <div>
-    <div class="head meta"><span>${esc(p.year)} · ${esc(p.org)}</span><span>#${esc(p.kind)}</span></div>
+    <div class="head meta"><span>${esc(p.year)} · ${esc(p.org)}</span><span class="setting">#${esc(p.setting || p.kind)}</span></div>
     <h3>${esc(p.title)}</h3>
     <p class="authors">${authors}</p>
     <p class="venue">${esc(p.venue)}</p>
@@ -137,12 +158,31 @@ const pubs = json('content/publications.json');
 const news = json('content/news.json');
 const intro = marked.parse(read('content/intro.md'));
 
+// Face looker (github.com/kylan02/face_looker): if assets/faces/ holds the generated
+// gaze images (gaze_px{x}_py{y}_{size}.webp), the photo becomes a face that looks at the cursor.
+// Without them the regular photo is shown.
+function faceLooker() {
+  const dir = path.join(ROOT, 'assets/faces');
+  if (!fs.existsSync(dir)) return null;
+  const num = (s) => parseFloat(s.replace(/^m/, '-').replace('p', '.'));
+  const faces = fs.readdirSync(dir)
+    .map((f) => f.match(/^gaze_px(m?\d+(?:p\d+)?)_py(m?\d+(?:p\d+)?)_\d+\.(webp|png|jpe?g)$/))
+    .filter(Boolean)
+    .map((m) => [num(m[1]), num(m[2]), m[0]]);
+  if (faces.length < 4) return null;
+  const center = faces.reduce((a, f) => (Math.hypot(f[0], f[1]) < Math.hypot(a[0], a[1]) ? f : a));
+  return `<div class="photo face-looker" data-faces='${JSON.stringify(faces)}'>
+      <img src="/assets/faces/${center[2]}" alt="Hyungu Kim, looking toward your cursor" width="236" height="236">
+    </div>`;
+}
+const photo = faceLooker() || `<div class="photo"><img src="/assets/img/hyungu.webp" alt="Hyungu Kim, sitting by a window with a laptop" width="196" height="236"></div>`;
+
 const home = layout({
   active: 'about', home: true,
   body: `
   <section class="intro">${intro}</section>
   <section class="profile">
-    <div class="photo"><img src="/assets/img/hyungu.webp" alt="Hyungu Kim, sitting by a window with a laptop" width="196" height="236"></div>
+    ${photo}
     <ul class="links">
       ${site.links.map((l) => `<li><a href="${l.href}" aria-label="${esc(l.label)}" title="${esc(l.label)}"${l.href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}><span class="br">[</span>${icon(l.icon)}<span class="br">]</span></a></li>`).join('\n      ')}
     </ul>
@@ -167,9 +207,8 @@ const blog = layout({
   title: 'blog', active: 'blog',
   body: `
   <section class="block">
-    <p class="blog-intro"><b>working notes.</b> on agents, robots, and the space between thinking and acting. some come with fuller experiments than others.</p>
     <div class="cards">${posts.map((p) => `<article class="post-card">
-      <a class="thumb" href="${p.url}" tabindex="-1" aria-hidden="true">${p.thumb ? `<img src="${p.thumb}" alt="" loading="lazy">` : ''}</a>
+      <a class="thumb" href="${p.url}" tabindex="-1" aria-hidden="true">${p.thumb ? `<img src="${p.thumb}" alt="" loading="lazy"${p.thumb_pos ? ` style="object-position:${p.thumb_pos}"` : ''}>` : ''}</a>
       <div class="body">
         <div class="top">
           <span class="meta">${fmtLong(p.date)} · ${p.minutes} min read</span>
@@ -197,18 +236,36 @@ const misc = layout({
   body: `<section class="block prose misc">${marked.parse(read("content/misc.md"))}</section>`,
 });
 
-const postPage = (p) => layout({
-  title: p.title, description: p.summary, active: 'blog',
-  body: `
+// give every h2 an id and collect them for the section strip
+function sections(html) {
+  const toc = [{ id: 'top', text: 'tl;dr' }];
+  const used = new Set(['top']);
+  const out = html.replace(/<h2>([\s\S]*?)<\/h2>/g, (m, inner) => {
+    const text = inner.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim();
+    let id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'section';
+    while (used.has(id)) id += '-';
+    used.add(id);
+    toc.push({ id, text });
+    return `<h2 id="${id}">${inner}</h2>`;
+  });
+  return { html: out, toc };
+}
+
+const postPage = (p) => {
+  const { html, toc } = sections(p.html);
+  return layout({
+    title: p.title, description: p.summary, active: 'blog', toc,
+    body: `
   <article>
-    <header class="post-head">
+    <header class="post-head" id="top">
       <div class="meta">${fmtLong(p.date)} · ${p.minutes} min read</div>
       <h1>${esc(p.title)}</h1>
       <div class="tags">${(p.tags || []).join(', ')}</div>
     </header>
-    <div class="prose">${p.html}</div>
+    <div class="prose">${html}</div>
   </article>`,
-});
+  });
+};
 
 const notFound = layout({ title: 'not found', body: `<section class="block"><p class="meta">404 — nothing here. <a class="special" href="/">go home</a></p></section>` });
 

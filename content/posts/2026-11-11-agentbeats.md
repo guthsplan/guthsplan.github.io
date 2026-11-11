@@ -3,7 +3,8 @@ title: Building both sides of the benchmark
 date: 2026-11-11
 summary: Notes from AgentX–AgentBeats, where we built the judge (an agentified Minecraft benchmark) and then the player (a VLA with a small planning harness). Most of the player's competence, I think, lived in the harness.
 tags: [agents, vla, minecraft, harness]
-thumb: /assets/diagrams/agentbeats-player.svg
+thumb: /assets/img/thumbs/agentbeats.webp
+thumb_pos: 22% 40%
 code: https://github.com/guthsplan/AgentBeats-JarvisVLA
 ---
 

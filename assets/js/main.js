@@ -20,6 +20,53 @@
     label();
   });
 
+  /* ---------------- scroll progress: the blue line under the header grows as you read ---------------- */
+  const line = document.querySelector('.scroll-line');
+  if (line) {
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const f = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      line.style.setProperty('--progress', f.toFixed(4));
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    update();
+  }
+
+  /* ---------------- post section strip: shows the section you are reading ---------------- */
+  const tocBtn = document.querySelector('.toc-current');
+  if (tocBtn) {
+    const list = document.getElementById('toc-list');
+    const links = [...list.querySelectorAll('a')];
+    const targets = links.map((a) => document.getElementById(a.getAttribute('href').slice(1)));
+    const numEl = tocBtn.querySelector('.num'), titleEl = tocBtn.querySelector('.title');
+    const head = document.querySelector('.site-head');
+    let cur = -1, queued = false;
+    const setOpen = (open) => { list.hidden = !open; tocBtn.setAttribute('aria-expanded', String(open)); };
+    const update = () => {
+      queued = false;
+      const line = head.getBoundingClientRect().bottom + 28; // a heading just under the bar counts as current
+      let i = 0;
+      targets.forEach((t, k) => { if (t && t.getBoundingClientRect().top <= line) i = k; });
+      if (i === cur) return;
+      cur = i;
+      numEl.textContent = links[i].dataset.num;
+      titleEl.textContent = links[i].textContent.replace(links[i].dataset.num, '').trim();
+      links.forEach((a, k) => a.classList.toggle('is-current', k === i));
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    tocBtn.addEventListener('click', () => setOpen(list.hidden));
+    links.forEach((a) => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+    document.addEventListener('click', (e) => { if (!list.hidden && !e.target.closest('.toc-inner')) setOpen(false); });
+    update();
+  }
+
   /* ---------------- mark ---------------- */
   // One progress value p ∈ [0,1] drives everything:
   //   gather  0.00–0.24  the drops drift together and fuse into one liquid mass
@@ -178,4 +225,86 @@
 
   // for screenshots / debugging: __mark(0.6) jumps to a frame
   window.__mark = (v) => { target = p = clamp(v); render(p); };
+})();
+
+/* Face looker: swap between pre-generated gaze images so the face looks at the cursor.
+   Images come from github.com/kylan02/face_looker (gaze_px{x}_py{y}_{size}.webp in /assets/faces/). */
+(() => {
+  const box = document.querySelector('.face-looker');
+  if (!box) return;
+  const img = box.querySelector('img');
+  const faces = JSON.parse(box.dataset.faces); // [px, py, filename], px/py in [-15, 15]
+  const max = Math.max(...faces.map((f) => Math.max(Math.abs(f[0]), Math.abs(f[1])))) || 15;
+  const src = (f) => `/assets/faces/${f[2]}`;
+
+  // preload quietly after the page has settled, so swaps are instant
+  const preload = () => faces.forEach((f) => { const i = new Image(); i.decoding = 'async'; i.src = src(f); });
+  if ('requestIdleCallback' in window) requestIdleCallback(preload, { timeout: 2000 });
+  else setTimeout(preload, 800);
+
+  let last = null;
+  // picking the nearest of ~121 images is cheap, so do it straight on each move
+  const look = (pos) => {
+    const r = box.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height * 0.42; // roughly eye height
+    // full gaze is reached about half a screen away from the face
+    const reach = Math.max(240, Math.min(window.innerWidth, window.innerHeight) * 0.5);
+    const nx = Math.max(-1, Math.min(1, (pos[0] - cx) / reach));
+    const ny = Math.max(-1, Math.min(1, (pos[1] - cy) / reach));
+    const tx = nx * max, ty = ny * max;
+    let best = faces[0], bd = Infinity;
+    for (const f of faces) { const d = (f[0] - tx) ** 2 + (f[1] - ty) ** 2; if (d < bd) { bd = d; best = f; } }
+    if (best !== last) { last = best; img.src = src(best); }
+  };
+  const move = (x, y) => look([x, y]);
+  window.addEventListener('pointermove', (e) => move(e.clientX, e.clientY), { passive: true });
+  window.addEventListener('touchmove', (e) => { const t = e.touches[0]; if (t) move(t.clientX, t.clientY); }, { passive: true });
+})();
+
+/* The name types itself like a vim buffer: insert (bar cursor) -> Esc (block on the
+   last letter) -> visual-select right-to-left (Klein blue) -> delete -> retype. Loops. */
+(() => {
+  const link = document.querySelector('.vim-name');
+  if (!link || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const box = link.querySelector('.vim-chars');
+  const cursor = link.querySelector('.vim-cursor');
+  const text = [...link.dataset.text];
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const jitter = (a, b) => a + Math.random() * (b - a);
+
+  const render = (n, { block = -1, selFrom = -1 } = {}) => {
+    box.textContent = '';
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement('span');
+      s.className = 'vim-ch';
+      s.textContent = text[i] === ' ' ? ' ' : text[i];
+      if (selFrom >= 0 && i >= selFrom) s.classList.add('is-selected');
+      if (i === block) s.classList.add('is-block');
+      box.append(s);
+    }
+  };
+  const mode = (m) => {
+    cursor.classList.toggle('is-bar', m === 'insert');
+    cursor.classList.toggle('is-hidden', m === 'block-on-char');
+  };
+
+  async function cycle() {
+    const n = text.length;
+    for (;;) {
+      mode('insert'); render(n);                        // full word, blinking bar
+      await wait(1600);
+      mode('block-on-char'); render(n, { block: n - 1 }); // <Esc>: block on last letter
+      await wait(300);
+      for (let i = n - 1; i >= 0; i--) {                 // v + h…: select right-to-left
+        render(n, { block: i, selFrom: i });
+        await wait(i === n - 1 ? 240 : jitter(55, 120));
+      }
+      await wait(770);
+      mode('normal'); render(0);                         // d: delete
+      await wait(1100);
+      mode('insert');                                    // i: retype
+      for (let i = 1; i <= n; i++) { render(i); await wait(jitter(105, 190)); }
+    }
+  }
+  cycle();
 })();

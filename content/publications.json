@@ -5,15 +5,40 @@
     "org": "SNU VGI Lab × SK Telecom",
     "kind": "technical report",
     "title": "VGI-SKT: Competition Solution for the 2026 BEHAVIOR Challenge",
-    "authors": ["Woosung Kim*", "Hyungu Kim*", "Hoyong Kim*", "Chunfei Ma", "Seungjun Lee", "Joonhyang Choi", "Haebeom Jung", "Hyunjoon Lee", "Sunghyun Choi", "Daeun Lee", "Eunsung Cha", "Seokmin Song", "Junghwan Park", "Jaesik Park"],
+    "authors": [
+      "Woosung Kim*",
+      "Hyungu Kim*",
+      "Hoyong Kim*",
+      "Chunfei Ma",
+      "Seungjun Lee",
+      "Joonhyang Choi",
+      "Haebeom Jung",
+      "Hyunjoon Lee",
+      "Sunghyun Choi",
+      "Daeun Lee",
+      "Eunsung Cha",
+      "Seokmin Song",
+      "Junghwan Park",
+      "Jaesik Park"
+    ],
     "venue": "BEHAVIOR Challenge 2026, technical report",
     "tldr": "G0.5 post-trained with belief-graph chain-of-thought, skill-balanced sampling, and subtask-routed LoRA experts. Mean Q-score 0.445 and 22.3% full-task success over 1,000 public rollouts.",
     "image": "/assets/img/b1k2026-method.webp",
     "imageAlt": "Method overview: G0.5 VLM predicts a subtask, which routes a skill-specific LoRA on the flow-matching action expert.",
     "links": [
-      { "label": "report", "href": "/assets/files/vgi-skt-behavior-2026.pdf" },
-      { "label": "code", "href": "https://github.com/guthsplan/behavior1k-2026-solution" },
-      { "label": "weights & rollouts", "href": "https://huggingface.co/datasets/KWSMooBang/vgi-skt_behavior1k_challenge_2026_submission" }
-    ]
+      {
+        "label": "report",
+        "href": "/assets/files/vgi-skt-behavior-2026.pdf"
+      },
+      {
+        "label": "code",
+        "href": "https://github.com/guthsplan/behavior1k-2026-solution"
+      },
+      {
+        "label": "weights & rollouts",
+        "href": "https://huggingface.co/datasets/KWSMooBang/vgi-skt_behavior1k_challenge_2026_submission"
+      }
+    ],
+    "setting": "simulation"
   }
 ]

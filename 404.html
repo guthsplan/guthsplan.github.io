@@ -12,20 +12,19 @@
 <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
 <link rel="alternate" type="application/rss+xml" title="Hyungu Kim" href="/feed.xml">
 </head>
 <body>
-<main class="shell">
+<header class="site-head">
+  <div class="bar col"><nav class="site-nav"><a href="/">about</a><a href="/blog/">blog</a><a href="/publications/">publications</a><a href="/misc/">misc</a></nav></div>
+  
   <button class="theme-toggle" type="button" aria-label="Toggle theme"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.4 2.6a9.6 9.6 0 1 0 12 12.1.7.7 0 0 0-.9-.9A7.8 7.8 0 0 1 10.3 3.5a.7.7 0 0 0-.9-.9Z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></g></svg></button>
-  <header class="masthead">
-    <div>
-      <h1><a href="/">Hyungu Kim</a></h1>
-      <nav class="site-nav"><a href="/">about</a><a href="/blog/">blog</a><a href="/publications/">publications</a><a href="/misc/">misc</a></nav>
-    </div>
-    
-  </header>
+  <div class="scroll-line" aria-hidden="true"><span></span></div>
+</header>
+<main class="shell col">
+  
 <section class="block"><p class="meta">404 — nothing here. <a class="special" href="/">go home</a></p></section>
   
   <footer class="site-foot"><span>© 2026 Hyungu Kim</span><span>Seoul</span></footer>

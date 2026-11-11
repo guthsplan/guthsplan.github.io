@@ -8,43 +8,55 @@
 
 ## Research Experience
 
-<div class="exp">
+<div class="exp has-logo">
+<img class="org-logo" src="/assets/img/logos/snu.svg" alt="Seoul National University" width="48" height="48">
+<div class="exp-body">
 
-**SNU Visual & Geometric Intelligence (VGI) Lab**
-<span class="role">Research Intern · 2025.10 – Current</span>
+**[SNU Visual & Geometric Intelligence (VGI) Lab](https://jaesik.info/)**
+<span class="role">Research Intern · 2025.10 – Current · Advisor: Prof. Jaesik Park</span>
 
 - System 1.5 VLA harness for Berkeley AgentBeats (1st place in both phases).
 - Pre-trained and skill-tuned VLA policies for BEHAVIOR-1K; VLM-based belief-graph management.
 - Recursive Language Model system for quantitative physics reasoning from visual inputs.
 
 </div>
-<div class="exp">
+</div>
+<div class="exp has-logo">
+<img class="org-logo" src="/assets/img/logos/yonsei.svg" alt="Yonsei University" width="48" height="48">
+<div class="exp-body">
 
-**Yonsei Multimedia AI Lab**
-<span class="role">Research Intern · 2025.12 – 2026.06</span>
+**[Yonsei Multimedia AI (MMAI) Lab](https://mmai.yonsei.ac.kr/)**
+<span class="role">Research Intern · 2025.12 – 2026.06 · Advisor: Prof. Jongyoo Kim</span>
 
 - CAD-free 6-DoF pose tracking with Hunyuan3D-generated object meshes.
 - Probed MASt3R dense features for granularity-aware matching across large viewpoint changes.
 
 </div>
-<div class="exp">
+</div>
+<div class="exp has-logo">
+<img class="org-logo" src="/assets/img/logos/snu.svg" alt="Seoul National University" width="48" height="48">
+<div class="exp-body">
 
-**SNU PI Lab**
-<span class="role">Research Intern · 2025.03 – 2025.06</span>
+**[SNU PI Lab](https://pi.snu.ac.kr/)**
+<span class="role">Research Intern · 2025.03 – 2025.06 · Advisor: Prof. Youngjae Yu</span>
 
 - Sim-to-real robot navigation with vision-language-action models.
 - Navigation waypoints from combined natural-language and sketch instructions.
 
 </div>
+</div>
 
 ## Education
 
-<div class="exp">
+<div class="exp has-logo">
+<img class="org-logo" src="/assets/img/logos/yonsei.svg" alt="Yonsei University" width="48" height="48">
+<div class="exp-body">
 
 **Yonsei University**
 <span class="role">B.S. Electrical and Electronic Engineering · 2020.03 – 2027.02 (Expected)</span>
 
 
+</div>
 </div>
 
 ## Projects

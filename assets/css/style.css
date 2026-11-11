@@ -10,13 +10,13 @@
   --halo-blue: #bfe9ee;
   --human-line: #f1d9c7;
   --robot-line: #faf9f6;
-  --paper: #f5f4f0;          /* warm off-white paper (renders ≈ #f3f2ee with the grain) */
-  --surface: #ebeae5;
+  --paper: #ffffff;          /* plain white, like alexzhang13.github.io */
+  --surface: #f4f5f6;
   --ink: #16181c;
   --body: #4a4f57;
   --muted: #7b8189;
-  --divider: #dfded8;
-  --grain: 0.05;             /* faint paper grain (light mode only) */
+  --divider: #e7e8ea;
+  --grain: 0;                /* paper grain off: plain white */
   --current: var(--klein);
   --hover: color-mix(in oklab, var(--klein) 50%, var(--tiffany));
   --halo: #9fdde5;
@@ -65,7 +65,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--body);
-  font: 400 16px/1.65 var(--sans);
+  font: 450 18px/1.7 var(--sans);
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
 }
@@ -79,19 +79,36 @@ body::before {
 }
 ::selection { background: var(--tiffany); color: #0b1a33; }
 
-.shell {
+/* the column: centred at every width; header and page share the same edges */
+:root { --col: 700px; --gutter: 24px; }
+.col {
   position: relative;
-  max-width: 688px;           /* 640 column + gutters */
-  margin: 0 auto;
-  padding: 72px 24px 96px;
+  width: min(var(--col), calc(100% - 2 * var(--gutter)));
+  margin-left: auto; margin-right: auto;
+}
+.shell { padding: 28px 0 96px; }
+/* no extra gap under the nav: the first thing on every page starts right away */
+.shell > :first-child, .shell > article:first-child > .post-head { margin-top: 0; }
+
+/* ---------- sticky header with a scroll-progress line ---------- */
+.site-head {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.scroll-line { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--divider); }
+.scroll-line span {
+  position: absolute; inset: 0; height: 1.5px; top: -0.25px;
+  background: var(--klein-blue);
+  transform-origin: left center; transform: scaleX(var(--progress, 0));
 }
 
-/* ---------- theme toggle (top centre) ---------- */
+/* ---------- theme toggle (top-right of the header) ---------- */
 .theme-toggle {
   position: absolute;
   z-index: 5;
-  top: 16px; left: 50%;
-  transform: translateX(-50%);
+  top: 26px; right: 18px;
+  transform: translateY(-50%);
   width: 44px; height: 44px;
   display: grid; place-items: center;
   border: 0; background: none; cursor: pointer;
@@ -112,21 +129,31 @@ body::before {
 }
 
 /* ---------- masthead ---------- */
+/* top bar: just the nav (the theme toggle sits at its right end) */
+.site-head .bar { display: flex; align-items: center; height: 52px; }
+.site-head nav.site-nav { margin: 0; }
+
+/* page masthead: the name (and, on the home page, the drops / drawing) */
 .masthead {
   position: relative;
   display: flex;
   align-items: center;
-  min-height: 170px;
+  min-height: 64px;
 }
+.masthead.is-home { min-height: 170px; }
+/* the name: headline size, in the site's mono face */
 .masthead h1, .page-title {
   margin: 0;
-  font: 500 18px/1.4 var(--mono);
-  letter-spacing: -0.025em;
+  font: 600 44px/1.1 var(--mono);
+  letter-spacing: -0.05em;
   color: var(--ink);
 }
+.masthead h1 b { font-weight: inherit; }
+.masthead:not(.is-home) h1 { font-size: 30px; }
+.tagline { margin: 10px 0 0; font-size: 19px; color: var(--body); }
 .masthead h1 a { color: inherit; text-decoration: none; }
 
-nav.site-nav { margin-top: 10px; font: 400 13.5px/1 var(--mono); letter-spacing: -0.02em; }
+nav.site-nav { margin-top: 10px; font: 500 15px/1 var(--mono); letter-spacing: -0.02em; }
 nav.site-nav a {
   color: var(--muted);
   text-decoration: none;
@@ -185,7 +212,7 @@ nav.site-nav .sep { color: var(--divider); margin-right: 14px; }
   stroke-dasharray: 1 1; stroke-dashoffset: 1;
 }
 .mark .hint {
-  position: absolute; left: 80%; top: calc(50.7% + 21%);
+  position: absolute; left: 80%; top: calc(50.7% + 17%);
   transform: translateX(-50%);
   font: 400 11px/1 var(--mono); letter-spacing: 0.02em; color: var(--muted);
   white-space: nowrap; pointer-events: none;
@@ -198,14 +225,21 @@ nav.site-nav .sep { color: var(--divider); margin-right: 14px; }
 .intro { margin-top: 18px; }
 .intro p, .prose p { margin: 0 0 1.05em; }
 em { font-style: italic; color: var(--ink); }
-strong { color: var(--ink); font-weight: 500; }
+strong { color: var(--ink); font-weight: 600; }
 
+/* important words are links in Klein blue (like the accent links on alexzhang13.github.io);
+   on hover they warm toward Tiffany and a halo line appears */
 a.special, .prose a, .intro a, .news a {
-  color: inherit;
+  color: var(--klein-blue);
   text-decoration: none;
-  border-bottom: 1px solid var(--halo);
+  border-bottom: 1px solid transparent;
   transition: color 0.45s var(--ease), border-color 0.45s var(--ease), text-shadow 0.45s var(--ease);
 }
+:root[data-theme="dark"] :is(a.special, .prose a, .intro a, .news a) { color: var(--current); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) :is(a.special, .prose a, .intro a, .news a) { color: var(--current); }
+}
+.prose strong a { font-weight: 600; }
 a.special:hover, .prose a:hover, .intro a:hover, .news a:hover,
 a.special:focus-visible, .prose a:focus-visible, .intro a:focus-visible {
   color: var(--hover);
@@ -253,12 +287,12 @@ a.special:focus-visible, .prose a:focus-visible, .intro a:focus-visible {
   padding: 2px 0 5px;
   color: var(--ink);
   text-decoration: none;
-  font: 300 14px/1 var(--mono);
+  font: 300 16px/1 var(--mono);
   background: linear-gradient(var(--halo-blue), var(--halo-blue)) center bottom / 0% 1px no-repeat;
   transition: background-size 0.6s var(--ease), color 0.45s var(--ease);
 }
 .links .br { color: var(--muted); transition: color 0.45s var(--ease); }
-.links svg { width: 15px; height: 15px; display: block; }
+.links svg { width: 18px; height: 18px; display: block; }
 .links a:hover, .links a:focus-visible { color: var(--hover); background-size: 100% 1px; }
 .links a:hover .br, .links a:focus-visible .br { color: var(--tiffany); }
 
@@ -267,7 +301,7 @@ hr.rule { border: 0; border-top: 1px solid var(--divider); margin: 48px 0 8px; }
 section.block { margin-top: 44px; }
 h2.section {
   margin: 0 0 18px;
-  font: 500 28px/1.2 var(--mono);
+  font: 600 32px/1.2 var(--mono);
   letter-spacing: -0.04em;
   color: var(--ink);
 }
@@ -280,8 +314,8 @@ h2.section {
 
 /* entries (posts / news) */
 .entries { list-style: none; margin: 0; padding: 0; }
-.entry { display: grid; grid-template-columns: 96px 1fr; gap: 16px; padding: 7px 0; }
-.entry .date { font: 400 12.5px/1.9 var(--mono); color: var(--muted); letter-spacing: -0.02em; }
+.entry { display: grid; grid-template-columns: 112px 1fr; gap: 16px; padding: 7px 0; }
+.entry .date { font: 500 13.5px/2 var(--mono); color: var(--muted); letter-spacing: -0.02em; }
 .entry a.title {
   color: var(--ink); text-decoration: none;
   transition: color .45s var(--ease), text-shadow .45s var(--ease);
@@ -293,12 +327,12 @@ h2.section {
 /* blog index rows */
 .post-row { padding: 22px 0; border-top: 1px solid var(--divider); }
 .post-row:first-child { border-top: 0; padding-top: 4px; }
-.meta { font: 400 12.5px/1.6 var(--mono); color: var(--muted); letter-spacing: -0.02em; }
+.meta { font: 500 13.5px/1.6 var(--mono); color: var(--muted); letter-spacing: -0.02em; }
 .post-row h3 { margin: 6px 0 6px; font: 500 16.5px/1.35 var(--mono); letter-spacing: -0.03em; }
 .post-row h3 a { color: var(--ink); text-decoration: none; transition: color .45s var(--ease), text-shadow .45s var(--ease); }
 .post-row h3 a:hover { color: var(--hover); text-shadow: 0 0 14px var(--glow); }
 .post-row p { margin: 0 0 6px; }
-.tags { font: 400 12px/1.6 var(--mono); color: var(--muted); }
+.tags { font: 500 13px/1.6 var(--mono); color: var(--muted); }
 
 /* publications */
 .pub { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 6px 0 20px; }
@@ -312,20 +346,20 @@ h2.section {
 .pub:hover .preview { border-color: var(--halo); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tiffany) 18%, transparent); }
 .pub .preview img { width: 100%; height: auto; }
 .pub .head { display: flex; justify-content: space-between; gap: 12px; }
-.pub h3 { margin: 4px 0 6px; font: 500 16.5px/1.35 var(--mono); letter-spacing: -0.03em; color: var(--ink); }
-.pub .authors { margin: 0 0 4px; font-size: 14.5px; }
+.pub h3 { margin: 4px 0 6px; font: 600 19px/1.35 var(--mono); letter-spacing: -0.03em; color: var(--ink); }
+.pub .authors { margin: 0 0 4px; font-size: 16.5px; }
 .pub .authors b { color: var(--ink); font-weight: 500; }
-.pub .venue { font-size: 14.5px; font-style: italic; color: var(--muted); margin: 0 0 6px; }
-.pub .tldr { margin: 0 0 8px; font-size: 15px; }
-.pub .plinks { font: 400 13px/1 var(--mono); }
+.pub .venue { font-size: 16.5px; font-style: italic; color: var(--muted); margin: 0 0 6px; }
+.pub .tldr { margin: 0 0 8px; font-size: 17px; }
+.pub .plinks { font: 400 14.5px/1 var(--mono); }
 .pub .plinks a { margin-right: 14px; }
 
 /* ---------- post page ---------- */
 .post-head { margin: 36px 0 30px; }
-.post-head h1 { margin: 6px 0 10px; font: 500 26px/1.25 var(--mono); letter-spacing: -0.045em; color: var(--ink); }
-.prose { font-size: 16.5px; line-height: 1.75; }
-.prose h2 { margin: 2.2em 0 0.7em; font: 500 19px/1.3 var(--mono); letter-spacing: -0.035em; color: var(--ink); }
-.prose h3 { margin: 1.8em 0 0.6em; font: 500 16.5px/1.3 var(--mono); color: var(--ink); }
+.post-head h1 { margin: 6px 0 10px; font: 600 32px/1.2 var(--mono); letter-spacing: -0.045em; color: var(--ink); }
+.prose { font-size: 18.5px; line-height: 1.75; }
+.prose h2 { margin: 2.2em 0 0.7em; font: 600 22px/1.3 var(--mono); letter-spacing: -0.035em; color: var(--ink); }
+.prose h3 { margin: 1.8em 0 0.6em; font: 500 18.5px/1.3 var(--mono); color: var(--ink); }
 .prose ul, .prose ol { padding-left: 1.3em; margin: 0 0 1.1em; }
 .prose li { margin: 0.25em 0; }
 .prose blockquote {
@@ -375,19 +409,23 @@ h2.section {
 footer.site-foot {
   margin-top: 28px; padding-top: 18px;
   border-top: 1px solid var(--divider);
-  font: 400 12px/1.6 var(--mono); color: var(--muted);
+  font: 400 13px/1.6 var(--mono); color: var(--muted);
   display: flex; justify-content: space-between; gap: 12px;
 }
 
 /* ---------- small screens ---------- */
 @media (max-width: 560px) {
-  .shell { padding: 64px 16px 72px; }
-  .masthead { min-height: 120px; }
-  .masthead > div:first-child { flex: 1; min-width: 0; }
-  nav.site-nav { line-height: 1.9; }
-  nav.site-nav a { margin-right: 10px; }
-  /* the mark sits above the nav line, to the right of the name */
-  .mark { width: 168px; right: -4px; top: -34px; transform: none; }
+  :root { --gutter: 16px; }
+  .shell { padding: 20px 0 72px; }
+  .masthead.is-home { min-height: 130px; align-items: flex-start; padding-top: 10px; }
+  .masthead h1 { font-size: 34px; }
+  .masthead:not(.is-home) h1 { font-size: 26px; }
+  .tagline { font-size: 16px; max-width: 58%; }
+  body { font-size: 17px; }
+  .prose { font-size: 17.5px; }
+  .theme-toggle { right: 4px; }
+  nav.site-nav a { margin-right: 12px; }
+  .mark { width: 176px; right: -4px; }
   .mark .hint { font-size: 10px; }
   .profile { grid-template-columns: 1fr; gap: 20px; }
   .photo { width: 100%; height: 260px; }
@@ -415,14 +453,14 @@ footer.site-foot {
 .pub .authors details.fold[open] summary { display: none; }
 
 /* misc page: terse bulletins */
-.misc h2 { margin: 2.4em 0 0.8em; font: 500 16px/1.3 var(--mono); letter-spacing: -0.02em; color: var(--ink); padding-bottom: 8px; border-bottom: 1px solid var(--divider); }
+.misc h2 { margin: 2.2em 0 0.8em; font: 600 26px/1.25 var(--mono); letter-spacing: -0.02em; color: var(--ink); padding-bottom: 8px; border-bottom: 1px solid var(--divider); }
 .misc h2:first-child { margin-top: 0.4em; }
 .misc ul { padding-left: 1.1em; }
 .misc li { margin: 0.35em 0; }
 .misc li::marker { color: var(--muted); }
 .misc .exp { margin: 0 0 1.4em; }
 .misc .exp p { margin: 0 0 0.3em; }
-.misc .exp .role { display: block; font: 400 13px/1.6 var(--mono); color: var(--muted); }
+.misc .exp .role { display: block; font: 500 14.5px/1.6 var(--mono); color: var(--muted); }
 .misc .exp ul { margin-top: 0.4em; }
 
 /* post figures (Excalidraw diagrams) */
@@ -431,8 +469,8 @@ footer.site-foot {
 .prose figure .edit { font: 400 12px/1 var(--mono); margin-left: 6px; }
 /* wide diagrams break out of the text column on large screens */
 @media (min-width: 760px) {
-  .prose figure { width: min(920px, calc(100vw - 64px)); position: relative; left: 50%; transform: translateX(-50%); }
-  .prose figure figcaption { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .prose figure { width: min(940px, calc(100vw - 48px)); position: relative; left: 50%; transform: translateX(-50%); }
+  .prose figure figcaption { max-width: var(--col); margin-left: auto; margin-right: auto; }
 }
 
 /* blog index: cards with a thumbnail (after alexzhang13.github.io/blog) */
@@ -446,16 +484,16 @@ footer.site-foot {
 }
 .post-card:hover { border-color: var(--halo-blue); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tiffany) 14%, transparent); }
 .post-card .thumb { display: block; background: var(--surface); min-height: 150px; }
-.post-card .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: left center; padding: 10px 0 10px 10px; }
+.post-card .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .post-card .body { padding: 16px 18px 14px; }
 .post-card .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .post-card .icon { color: var(--ink); display: inline-flex; transition: color .45s var(--ease); }
 .post-card .icon svg { width: 16px; height: 16px; }
 .post-card .icon:hover { color: var(--hover); }
-.post-card h3 { margin: 6px 0 6px; font: 500 17px/1.35 var(--mono); letter-spacing: -0.03em; }
+.post-card h3 { margin: 6px 0 6px; font: 600 19.5px/1.35 var(--mono); letter-spacing: -0.03em; }
 .post-card h3 a { color: var(--ink); text-decoration: none; transition: color .45s var(--ease), text-shadow .45s var(--ease); }
 .post-card h3 a:hover { color: var(--hover); text-shadow: 0 0 14px var(--glow); }
-.post-card p { margin: 0 0 10px; font-size: 15px; }
+.post-card p { margin: 0 0 10px; font-size: 16.5px; }
 @media (max-width: 560px) {
   .post-card { grid-template-columns: 1fr; }
   .post-card .thumb { min-height: 0; aspect-ratio: 16 / 7; }
@@ -470,3 +508,70 @@ footer.site-foot {
   :root:not([data-theme="light"]) .prose figure img,
   :root:not([data-theme="light"]) .post-card .thumb img { filter: invert(0.93) hue-rotate(180deg); }
 }
+
+/* ---------- post section strip (after anthropic.com/research) ---------- */
+.toc-bar { border-top: 1px solid var(--divider); }
+.toc-inner { position: relative; }
+.toc-current {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  height: 40px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: 400 14.5px/1 var(--mono); letter-spacing: -0.01em; color: var(--ink); text-align: left;
+}
+.toc-current .num, .toc-list .num { color: var(--muted); font-variant-numeric: tabular-nums; }
+.toc-current .title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; transition: opacity .25s var(--ease); }
+.toc-current .chev { width: 16px; height: 16px; color: var(--muted); transition: transform .35s var(--ease), color .35s var(--ease); }
+.toc-current:hover .chev, .toc-current:hover .title { color: var(--hover); }
+.toc-current[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.toc-list {
+  list-style: none; margin: 0; padding: 6px 0 12px;
+  border-top: 1px solid var(--divider);
+}
+.toc-list a {
+  display: flex; gap: 14px; padding: 7px 0;
+  font: 400 14.5px/1.4 var(--mono); color: var(--body); text-decoration: none;
+  transition: color .35s var(--ease);
+}
+.toc-list a:hover { color: var(--hover); }
+.toc-list a.is-current { color: var(--klein-blue); }
+:root[data-theme="dark"] .toc-list a.is-current { color: var(--current); }
+.prose h2, .post-head { scroll-margin-top: 104px; }
+
+/* face looker: square portrait */
+.photo.face-looker { width: 236px; height: 236px; }
+.photo.face-looker img { object-position: 50% 50%; }
+@media (max-width: 560px) { .photo.face-looker { width: 100%; height: auto; aspect-ratio: 1; } }
+
+/* ---------- the name, typed like a vim buffer (after alexzhang13.github.io/blog) ---------- */
+.vim-name { white-space: nowrap; }
+.vim-ch { display: inline-block; }
+.vim-ch.is-block { background: var(--ink); color: var(--paper); }
+.vim-ch.is-selected { background: var(--klein-blue); color: #fff; }
+:root[data-theme="dark"] .vim-ch.is-selected { background: var(--current); }
+.vim-cursor {
+  display: inline-block; vertical-align: -0.12em;
+  width: 0.56em; height: 1.02em; margin-left: 1px;
+  background: var(--ink);
+}
+.vim-cursor.is-bar { width: 3px; margin-left: 2px; animation: vim-blink 1.05s steps(1) infinite; }
+.vim-cursor.is-hidden { visibility: hidden; }
+@keyframes vim-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.4; } }
+@media (prefers-reduced-motion: reduce) { .vim-cursor { display: none; } }
+
+/* misc: LinkedIn-style rows, university emblem on the left */
+.misc .exp.has-logo { display: grid; grid-template-columns: 52px 1fr; gap: 0 18px; align-items: start; }
+.misc .org-logo {
+  width: 52px; height: 52px; padding: 5px; margin-top: 3px;
+  object-fit: contain; background: #fff;
+  border: 0; border-radius: 8px;
+}
+.misc .exp-body > :first-child { margin-top: 0; }
+@media (max-width: 560px) {
+  .misc .exp.has-logo { grid-template-columns: 42px 1fr; gap: 0 12px; }
+  .misc .org-logo { width: 42px; height: 42px; padding: 4px; }
+}
+
+/* intro: compact research-pieces list */
+.intro ul { margin: -0.3em 0 1.05em; padding-left: 1.2em; }
+.intro li { margin: 0.15em 0; }
+.intro li::marker { color: var(--klein-blue); }
+.intro li strong { font-weight: 600; }

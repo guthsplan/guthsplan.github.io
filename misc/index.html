@@ -12,20 +12,19 @@
 <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
 <link rel="alternate" type="application/rss+xml" title="Hyungu Kim" href="/feed.xml">
 </head>
 <body>
-<main class="shell">
+<header class="site-head">
+  <div class="bar col"><nav class="site-nav"><a href="/">about</a><a href="/blog/">blog</a><a href="/publications/">publications</a><a href="/misc/" aria-current="page">misc</a></nav></div>
+  
   <button class="theme-toggle" type="button" aria-label="Toggle theme"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.4 2.6a9.6 9.6 0 1 0 12 12.1.7.7 0 0 0-.9-.9A7.8 7.8 0 0 1 10.3 3.5a.7.7 0 0 0-.9-.9Z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></g></svg></button>
-  <header class="masthead">
-    <div>
-      <h1><a href="/">Hyungu Kim</a></h1>
-      <nav class="site-nav"><a href="/">about</a><a href="/blog/">blog</a><a href="/publications/">publications</a><a href="/misc/" aria-current="page">misc</a></nav>
-    </div>
-    
-  </header>
+  <div class="scroll-line" aria-hidden="true"><span></span></div>
+</header>
+<main class="shell col">
+  
 <section class="block prose misc"><h2>Honors &amp; Awards</h2>
 <ul>
 <li><strong>1st Place, Berkeley AgentX–AgentBeats Competition, Phase 1</strong> - agentified Minecraft (MCU) benchmark, 2026 (<a href="https://rdi.berkeley.edu/agentx-agentbeats">Link</a>)</li>
@@ -35,40 +34,52 @@
 <li><strong>Next-Generation Engineer Badge</strong> - IPESK</li>
 </ul>
 <h2>Research Experience</h2>
-<div class="exp">
+<div class="exp has-logo">
+<img class="org-logo" src="/assets/img/logos/snu.svg" alt="Seoul National University" width="48" height="48">
+<div class="exp-body">
 
-<p><strong>SNU Visual &amp; Geometric Intelligence (VGI) Lab</strong>
-<span class="role">Research Intern · 2025.10 – Current</span></p>
+<p><strong><a href="https://jaesik.info/">SNU Visual &amp; Geometric Intelligence (VGI) Lab</a></strong>
+<span class="role">Research Intern · 2025.10 – Current · Advisor: Prof. Jaesik Park</span></p>
 <ul>
 <li>System 1.5 VLA harness for Berkeley AgentBeats (1st place in both phases).</li>
 <li>Pre-trained and skill-tuned VLA policies for BEHAVIOR-1K; VLM-based belief-graph management.</li>
 <li>Recursive Language Model system for quantitative physics reasoning from visual inputs.</li>
 </ul>
 </div>
-<div class="exp">
+</div>
+<div class="exp has-logo">
+<img class="org-logo" src="/assets/img/logos/yonsei.svg" alt="Yonsei University" width="48" height="48">
+<div class="exp-body">
 
-<p><strong>Yonsei Multimedia AI Lab</strong>
-<span class="role">Research Intern · 2025.12 – 2026.06</span></p>
+<p><strong><a href="https://mmai.yonsei.ac.kr/">Yonsei Multimedia AI (MMAI) Lab</a></strong>
+<span class="role">Research Intern · 2025.12 – 2026.06 · Advisor: Prof. Jongyoo Kim</span></p>
 <ul>
 <li>CAD-free 6-DoF pose tracking with Hunyuan3D-generated object meshes.</li>
 <li>Probed MASt3R dense features for granularity-aware matching across large viewpoint changes.</li>
 </ul>
 </div>
-<div class="exp">
+</div>
+<div class="exp has-logo">
+<img class="org-logo" src="/assets/img/logos/snu.svg" alt="Seoul National University" width="48" height="48">
+<div class="exp-body">
 
-<p><strong>SNU PI Lab</strong>
-<span class="role">Research Intern · 2025.03 – 2025.06</span></p>
+<p><strong><a href="https://pi.snu.ac.kr/">SNU PI Lab</a></strong>
+<span class="role">Research Intern · 2025.03 – 2025.06 · Advisor: Prof. Youngjae Yu</span></p>
 <ul>
 <li>Sim-to-real robot navigation with vision-language-action models.</li>
 <li>Navigation waypoints from combined natural-language and sketch instructions.</li>
 </ul>
 </div>
+</div>
 
 <h2>Education</h2>
-<div class="exp">
+<div class="exp has-logo">
+<img class="org-logo" src="/assets/img/logos/yonsei.svg" alt="Yonsei University" width="48" height="48">
+<div class="exp-body">
 
 <p><strong>Yonsei University</strong>
 <span class="role">B.S. Electrical and Electronic Engineering · 2020.03 – 2027.02 (Expected)</span></p>
+</div>
 </div>
 
 <h2>Projects</h2>
