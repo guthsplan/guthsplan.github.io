@@ -44,7 +44,6 @@
 **Yonsei University**
 <span class="role">B.S. Electrical and Electronic Engineering · 2020.03 – 2027.02 (Expected)</span>
 
-- GPA 3.93 / 4.30 (cumulative), 4.14 / 4.30 (major)
 
 </div>
 
