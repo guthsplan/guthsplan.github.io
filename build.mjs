@@ -148,7 +148,7 @@ function pubBlock(p) {
   <div>
     <div class="head meta"><span>${esc(p.year)} · ${esc(p.org)}</span><span class="setting">#${esc(p.setting || p.kind)}</span></div>
     <h3>${esc(p.title)}</h3>
-    <p class="authors">${authors}</p>
+    <div class="authors">${authors}</div>
     <p class="venue">${esc(p.venue)}</p>
     ${p.tldr ? `<p class="tldr">${esc(p.tldr)}</p>` : ''}
     <div class="plinks">${p.links.map((l) => `<a class="special" href="${l.href}">${esc(l.label)}</a>`).join('')}</div>

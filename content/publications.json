@@ -34,10 +34,32 @@
         "href": "https://github.com/guthsplan/behavior1k-2026-solution"
       },
       {
-        "label": "weights & rollouts",
+        "label": "Hugging Face",
         "href": "https://huggingface.co/datasets/KWSMooBang/vgi-skt_behavior1k_challenge_2026_submission"
       }
     ],
     "setting": "simulation"
+  },
+  {
+    "selected": true,
+    "year": "2026",
+    "org": "Yonsei Multimedia AI Lab",
+    "kind": "conference paper",
+    "setting": "object tracking",
+    "title": "Monocular 6-DoF Object Pose Tracking with Learned Depth and Matching Priors",
+    "authors": [
+      "Semin Kim",
+      "Hyungu Kim",
+      "Jongyoo Kim"
+    ],
+    "venue": "APSIPA ASC 2026",
+    "image": "/assets/img/apsipa2026-method.webp",
+    "imageAlt": "Pipeline: SAM 3 masks and MoGe-2 metric depth, LoFTR matching with PnP-RANSAC, then keyframe bundle adjustment produce the object pose trajectory.",
+    "links": [
+      {
+        "label": "report",
+        "href": "/assets/files/apsipa-2026-monocular-6dof.pdf"
+      }
+    ]
   }
 ]

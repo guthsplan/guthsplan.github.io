@@ -347,7 +347,7 @@ h2.section {
 .pub .preview img { width: 100%; height: auto; }
 .pub .head { display: flex; justify-content: space-between; gap: 12px; }
 .pub h3 { margin: 4px 0 6px; font: 600 19px/1.35 var(--mono); letter-spacing: -0.03em; color: var(--ink); }
-.pub .authors { margin: 0 0 4px; font-size: 16.5px; }
+.pub .authors { margin: 0 0 4px; font-size: 16.5px; line-height: 1.6; }
 .pub .authors b { color: var(--ink); font-weight: 500; }
 .pub .venue { font-size: 16.5px; font-style: italic; color: var(--muted); margin: 0 0 6px; }
 .pub .tldr { margin: 0 0 8px; font-size: 17px; }
