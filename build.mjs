@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
 import { fileURLToPath } from 'node:url';
+import crypto from 'node:crypto';
 import { marked } from 'marked';
 import { markSVG } from './lib/mark.mjs';
 
@@ -14,6 +15,8 @@ const json = (p) => JSON.parse(read(p));
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 const site = json('content/site.json');
+const hash = (p) => crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, p))).digest('hex').slice(0, 8);
+const VER = { css: hash('assets/css/style.css'), js: hash('assets/js/main.js') };
 
 /* ---------------- posts ---------------- */
 function parsePost(file) {
@@ -100,7 +103,7 @@ function layout({ title, description, active, body, home = false, toc = null }) 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/style.css?v=${VER.css}">
 <link rel="alternate" type="application/rss+xml" title="${esc(site.name)}" href="/feed.xml">
 </head>
 <body>
@@ -122,7 +125,7 @@ ${body}
   ${home ? '<p class="epigraph"><q class="sweep">Blue has no dimensions. It is beyond dimensions.</q><span>— Yves Klein</span></p>' : ''}
   <footer class="site-foot"><span>© ${new Date().getFullYear()} ${esc(site.name)}</span><span>Seoul</span></footer>
 </main>
-<script src="/assets/js/main.js" defer></script>
+<script src="/assets/js/main.js?v=${VER.js}" defer></script>
 </body>
 </html>
 `;
