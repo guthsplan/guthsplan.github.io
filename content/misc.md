@@ -54,11 +54,4 @@
 - **Deep Learning Reproductions** - 21 papers re-implemented (Grad-CAM, XOR-Net, …) with experiment reports
 - **Reinforcement Learning Studies** - Q-learning, SAC, offline RL, model-based RL and RLHF, as technical reports
 
-## Skills
-
-- **Languages** - Python, C/C++, Java, JavaScript, TypeScript
-- **ML & Robotics** - PyTorch, JAX, Hugging Face Transformers, vLLM, NVIDIA Isaac Sim
-- **3D & Web** - Node.js, Three.js, FastAPI, Blender (bpy)
-- **Infrastructure** - Git, Docker, Linux, CUDA
-
 <p class="meta">Full details in the <a href="/assets/files/CV_HyunguKim.pdf">CV</a>.</p>
