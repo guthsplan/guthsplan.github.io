@@ -1,8 +1,30 @@
 [
-  { "date": "Oct 2026", "text": "Released our [solution and technical report](https://github.com/guthsplan/behavior1k-2026-solution) for the 2026 BEHAVIOR Challenge (team VGI-SKT)." },
-  { "date": "Aug 2026", "text": "Attended the Agentic AI Summit 2026 at UC Berkeley as an AgentX–AgentBeats winner." },
-  { "date": "Jun 2026", "text": "**1st place (tie)** in Phase 2 of [AgentX–AgentBeats](https://rdi.berkeley.edu/agentx-agentbeats) with VGI-Player, our Minecraft purple agent." },
-  { "date": "Feb 2026", "text": "**1st place** in Phase 1 of [AgentX–AgentBeats](https://rdi.berkeley.edu/agentx-agentbeats) with our agentified Minecraft (MCU) benchmark." },
-  { "date": "Dec 2025", "text": "Joined the [Yonsei Multimedia AI Lab](https://mmai.yonsei.ac.kr/) as a research intern (CAD-free 6-DoF pose tracking)." },
-  { "date": "Oct 2025", "text": "Joined the [SNU Visual & Geometric Intelligence Lab](https://jaesik.info/) as a research intern." }
+  {
+    "date": "Oct 2026",
+    "text": "Released our [solution and technical report](https://github.com/guthsplan/behavior1k-2026-solution) for the 2026 BEHAVIOR Challenge (team VGI-SKT)."
+  },
+  {
+    "date": "Aug 2026",
+    "text": "Attended the Agentic AI Summit 2026 at UC Berkeley as an AgentX–AgentBeats winner."
+  },
+  {
+    "date": "Jun 2026",
+    "text": "Our AgentBeats wins in both phases of the Game Agent track were featured in [SNU CSE news](https://cse.snu.ac.kr/ko/community/news/1213)."
+  },
+  {
+    "date": "Jun 2026",
+    "text": "**1st place (tie)** in Phase 2 of [AgentX–AgentBeats](https://rdi.berkeley.edu/agentx-agentbeats) with VGI-Player, our Minecraft purple agent."
+  },
+  {
+    "date": "Feb 2026",
+    "text": "**1st place** in Phase 1 of [AgentX–AgentBeats](https://rdi.berkeley.edu/agentx-agentbeats) with our agentified Minecraft (MCU) benchmark."
+  },
+  {
+    "date": "Dec 2025",
+    "text": "Joined the [Yonsei Multimedia AI Lab](https://mmai.yonsei.ac.kr/) as a research intern (CAD-free 6-DoF pose tracking)."
+  },
+  {
+    "date": "Oct 2025",
+    "text": "Joined the [SNU Visual & Geometric Intelligence Lab](https://jaesik.info/) as a research intern."
+  }
 ]

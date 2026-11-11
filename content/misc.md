@@ -1,7 +1,7 @@
 ## Honors & Awards
 
-- **1st Place, Berkeley AgentX–AgentBeats Competition, Phase 1** - agentified Minecraft (MCU) benchmark, 2026 ([Link](https://rdi.berkeley.edu/agentx-agentbeats))
-- **1st Place (tie), Berkeley AgentX–AgentBeats Competition, Phase 2** - VGI-Player, Minecraft purple agent, 2026 ([Link](https://rdi.berkeley.edu/agentx-agentbeats))
+- **1st Place, Berkeley AgentX–AgentBeats Competition, Phase 1 (Game Agent track)** - agentified Minecraft (MCU) benchmark, 2026 ([Link](https://rdi.berkeley.edu/agentx-agentbeats), [SNU CSE news](https://cse.snu.ac.kr/ko/community/news/1213))
+- **1st Place (tie), Berkeley AgentX–AgentBeats Competition, Phase 2 (Game Agent track)** - VGI-Player, Minecraft purple agent, 2026 ([Link](https://rdi.berkeley.edu/agentx-agentbeats), [SNU CSE news](https://cse.snu.ac.kr/ko/community/news/1213))
 - **Physics Expert Certification**
 - **Academic Excellence Award** - Yonsei University, Spring 2021 and Spring 2025
 - **Next-Generation Engineer Badge** - IPESK
@@ -17,7 +17,6 @@
 
 - System 1.5 VLA harness for Berkeley AgentBeats (1st place in both phases).
 - Pre-trained and skill-tuned VLA policies for BEHAVIOR-1K; VLM-based belief-graph management.
-- Recursive Language Model system for quantitative physics reasoning from visual inputs.
 
 </div>
 </div>
